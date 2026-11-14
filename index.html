@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Last Known Voice — how AI agents should behave</title>
+<meta name="description" content="A free, open field guide to designing AI agents that listen, wait and act. By Ian Roberts.">
+<meta property="og:title" content="Last Known Voice">
+<meta property="og:description" content="How AI agents should behave — specified, defensible, testable.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://lastknown.design/">
+
+<style>
+  :root {
+    --paper:      #faf9f6;
+    --paper-sunk: #f2f0ea;
+    --ink:        #171614;
+    --ink-mid:    #4a4741;
+    --ink-soft:   #77736a;
+    --rule:       #dedbd2;
+    --rule-soft:  #ebe8e0;
+    --accent:     #8a3324;
+    --accent-dim: #b8604f;
+    --measure:    34rem;
+
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans:  ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+    --mono:  ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:      #131211;
+      --paper-sunk: #1c1b19;
+      --ink:        #ece8e0;
+      --ink-mid:    #b5b0a6;
+      --ink-soft:   #8b867c;
+      --rule:       #33312d;
+      --rule-soft:  #262523;
+      --accent:     #e08b74;
+      --accent-dim: #c06a53;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: clamp(1.0625rem, 0.98rem + 0.42vw, 1.1875rem);
+    line-height: 1.62;
+    text-wrap: pretty;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+  a:hover { text-decoration-color: var(--accent); }
+
+  .wrap {
+    max-width: 68rem;
+    margin: 0 auto;
+    padding: 0 clamp(1.25rem, 5vw, 3rem);
+  }
+
+  /* ---------- masthead ---------- */
+
+  header.masthead {
+    padding: clamp(1.75rem, 5vw, 3rem) 0 0;
+  }
+
+  .wordmark {
+    display: flex;
+    align-items: baseline;
+    gap: 0.65rem;
+    font-family: var(--sans);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .wordmark .mark {
+    color: var(--accent);
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+  .wordmark .sep {
+    color: var(--rule);
+    font-weight: 400;
+  }
+  .wordmark .tag {
+    margin-left: auto;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+    text-transform: none;
+    font-style: italic;
+    font-family: var(--serif);
+    font-size: 0.9375rem;
+    color: var(--ink-soft);
+  }
+
+  hr.rule {
+    border: 0;
+    border-top: 1px solid var(--rule);
+    margin: clamp(1rem, 3vw, 1.5rem) 0 0;
+  }
+
+  /* ---------- hero ---------- */
+
+  section.hero {
+    padding: clamp(2.75rem, 8vw, 5.5rem) 0 clamp(2.5rem, 7vw, 4rem);
+    max-width: 46rem;
+  }
+
+  h1 {
+    font-size: clamp(2.25rem, 1.5rem + 3.6vw, 3.75rem);
+    line-height: 1.08;
+    letter-spacing: -0.018em;
+    font-weight: 400;
+    margin: 0 0 1.5rem;
+    text-wrap: balance;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .lede {
+    font-size: 1.1875rem;
+    line-height: 1.55;
+    color: var(--ink-mid);
+    max-width: 38rem;
+    margin: 0 0 1.25rem;
+  }
+
+  .lede strong { color: var(--ink); font-weight: 600; }
+
+  .pull {
+    margin: 2.25rem 0 0;
+    padding: 1.5rem 0 0;
+    border-top: 1px solid var(--rule-soft);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--ink-mid);
+    max-width: var(--measure);
+  }
+  .pull span {
+    display: block;
+    font-family: var(--sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 0.6rem;
+  }
+
+  /* ---------- actions ---------- */
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 2.5rem 0 0;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.4rem;
+    border-radius: 2px;
+    font-family: var(--sans);
+    font-size: 0.9375rem;
+    font-weight: 550;
+    letter-spacing: 0.005em;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+  }
+  .btn-primary {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .btn-primary:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--rule);
+  }
+  .btn-ghost:hover { border-color: var(--ink-soft); background: var(--paper-sunk); }
+
+  .btn:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .note {
+    margin: 1.5rem 0 0;
+    font-family: var(--sans);
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 32rem;
+  }
+
+  /* ---------- sections ---------- */
+
+  section { padding: clamp(2.5rem, 6vw, 4rem) 0; }
+  section + section { border-top: 1px solid var(--rule-soft); }
+
+  h2 {
+    font-family: var(--sans);
+    font-size: 0.6875rem;
+    font-weight: 650;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 1.75rem;
+  }
+
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: clamp(1.5rem, 4vw, 2.75rem);
+  }
+
+  .col h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin: 0 0 0.45rem;
+    letter-spacing: -0.005em;
+  }
+  .col p {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.58;
+    color: var(--ink-mid);
+  }
+  .col .num {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ---------- policies ---------- */
+
+  .policies {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .policies li {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: 0 1.25rem;
+    align-items: baseline;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .policies .k {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    padding-top: 0.15em;
+  }
+  .policies .v {
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+  .policies .v b { font-weight: 600; }
+  .policies .v i { color: var(--ink-soft); font-style: italic; }
+
+  /* ---------- work ---------- */
+
+  .work { max-width: var(--measure); }
+  .work p { margin: 0 0 1.1rem; color: var(--ink-mid); }
+  .work p:last-child { margin-bottom: 0; }
+  .work strong { color: var(--ink); font-weight: 600; }
+
+  .worklist {
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+  }
+  .worklist li {
+    padding: 0.85rem 0;
+    border-top: 1px solid var(--rule-soft);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--ink-mid);
+  }
+  .worklist li:last-child { border-bottom: 1px solid var(--rule-soft); }
+  .worklist b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- footer ---------- */
+
+  footer {
+    padding: clamp(2.5rem, 6vw, 3.5rem) 0 clamp(2.5rem, 6vw, 4rem);
+    border-top: 1px solid var(--rule);
+    font-family: var(--sans);
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    color: var(--ink-soft);
+  }
+  .foot-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    align-items: baseline;
+  }
+  .foot-grid a { color: var(--ink-mid); text-decoration: none; }
+  .foot-grid a:hover { color: var(--accent); text-decoration: underline; }
+  .foot-note {
+    margin: 1.5rem 0 0;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule-soft);
+    max-width: 36rem;
+  }
+  .foot-note em { color: var(--ink-mid); font-style: italic; }
+
+  .mono { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.02em; }
+
+  @media (max-width: 30rem) {
+    .policies li { grid-template-columns: 3.25rem 1fr; gap: 0 0.85rem; }
+    .actions .btn { width: 100%; justify-content: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="wordmark">
+      <span class="mark">Last Known Voice</span>
+      <span class="sep">/</span>
+      <span>Ian Roberts</span>
+      <span class="tag">agent behaviour</span>
+    </div>
+    <hr class="rule">
+  </header>
+
+  <section class="hero">
+    <h1>How should an AI agent <em>behave</em>?</h1>
+
+    <p class="lede">
+      The design object has moved. We used to design utterances. Now we specify
+      behaviour — the timing, the restraint, the permission, the modality choice,
+      the silence, and the moment of disclosure.
+      <strong>The behaviour of the system is mostly not in the response.</strong>
+    </p>
+
+    <p class="lede">
+      Most failures are not model failures. They are failures of specification:
+      nobody wrote down what the system should do in that moment, so it invented
+      something — and the invention was plausible enough to ship.
+    </p>
+
+    <div class="pull">
+      <span>The position</span>
+      If you cannot say what your agent should do when the conversation turns
+      awkward, you have not designed it. You have delegated a thousand decisions
+      to an implementation that will make them without you.
+    </div>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="https://book.lastknown.design/">Read the book</a>
+      <a class="btn btn-ghost" href="https://book.lastknown.design/ch13-drills/">Try a drill</a>
+    </div>
+
+    <p class="note">
+      Free, open, and updated monthly. ~70,000 words, no sign-up, no email
+      required. Every claim traceable, every number sourced, every example says
+      whether it really happened.
+    </p>
+  </section>
+
+  <section>
+    <h2>What the book gives you</h2>
+    <div class="cols">
+      <div class="col">
+        <span class="num">01</span>
+        <h3>Six policies</h3>
+        <p>
+          Language, conversation, modality, agency, attention, representation —
+          each one a position you can defend, and a decision you can write down.
+        </p>
+      </div>
+      <div class="col">
+        <span class="num">02</span>
+        <h3>A working library</h3>
+        <p>
+          Sixteen patterns and twelve anti-patterns, for the moments where you
+          need to know what good looks like and what quietly goes wrong.
+        </p>
+      </div>
+      <div class="col">
+        <span class="num">03</span>
+        <h3>Twenty-two drills</h3>
+        <p>
+          Situations that put a decision in front of you under enough pressure
+          that you have to say what you would actually do.
+        </p>
+      </div>
+      <div class="col">
+        <span class="num">04</span>
+        <h3>Templates</h3>
+        <p>
+          Interaction contracts, autonomy decision cards, evaluation sheets —
+          fill them in on a real project, not on a slide.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The six policies</h2>
+    <ul class="policies">
+      <li>
+        <span class="k">01</span>
+        <span class="v"><b>Language</b> <i>— what should I say?</i></span>
+      </li>
+      <li>
+        <span class="k">02</span>
+        <span class="v"><b>Conversation</b> <i>— when should I speak, listen, interrupt or wait?</i></span>
+      </li>
+      <li>
+        <span class="k">03</span>
+        <span class="v"><b>Modality</b> <i>— should I say it, show it or act?</i></span>
+      </li>
+      <li>
+        <span class="k">04</span>
+        <span class="v"><b>Agency</b> <i>— should I act or ask permission?</i></span>
+      </li>
+      <li>
+        <span class="k">05</span>
+        <span class="v"><b>Attention</b> <i>— what should I surface while I&rsquo;m working?</i></span>
+      </li>
+      <li>
+        <span class="k">06</span>
+        <span class="v"><b>Representation</b> <i>— who am I when I interact on your behalf?</i></span>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Work with me</h2>
+    <div class="work">
+      <p>
+        The book is free and always will be. It is the credential and the
+        argument. What follows is how that turns into work.
+      </p>
+      <p>
+        I work with teams designing or auditing voice agents and agentic
+        systems — <strong>design review, workshops, and evaluation</strong> that
+        ends in a decision rather than a report that sits unread.
+      </p>
+      <ul class="worklist">
+        <li>
+          <b>Design review</b> — for teams whose agent handles the obvious cases
+          well and the awkward ones badly.
+        </li>
+        <li>
+          <b>Workshops</b> — half-day or full-day sessions built on the drills
+          rather than the prose. Teams argue about the answers and leave with
+          their own filled-in contract.
+        </li>
+        <li>
+          <b>Reviews of your own work</b> — if you have published something on
+          agent behaviour, I would like to read it and tell you where I think
+          it is wrong. I do this freely.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-grid">
+      <span><span class="mark" style="font-family:var(--serif);font-size:1rem;">Last Known Voice</span></span>
+      <a href="https://book.lastknown.design/">The book</a>
+      <a href="https://github.com/lastknownvoice">GitHub</a>
+      <a href="mailto:ian@lastknown.design">ian@lastknown.design</a>
+    </div>
+    <p class="foot-note">
+      <em>Last Known Voice</em> is the imprint behind <a href="https://book.lastknown.design/">Conversation Is the Control Layer</a> —
+      free under CC BY 4.0. Quote it, translate it, teach from it, adapt it.
+      Corrections are welcome and treated as contributions, not nitpicks:
+      <a href="https://github.com/lastknownvoice/conversation-is-the-control-layer/issues">open an issue</a>.
+    </p>
+  </footer>
+
+</div>
+
+</body>
+</html>
