@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Last Known Voice — how AI agents should behave</title>
-<meta name="description" content="Last Known Voice — a free, open field guide to designing AI agents that listen, wait and act. By Ian Roberts.">
+<title>Last Known Design</title>
+<meta name="description" content="Last Known Design — a practice and a body of work on how AI agents should behave.">
 <meta property="og:title" content="lastknown.design">
-<meta property="og:description" content="A free field guide to designing AI agents that listen, wait and act.">
+<meta property="og:description" content="Last Known Design — a practice and a body of work on how AI agents should behave.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#131211" media="(prefers-color-scheme: dark)">
@@ -154,47 +154,16 @@
   }
   h1 .tld { color: var(--accent); }
 
-  /* ---------- the door ---------- */
+  /* ---------- the standfirst ---------- */
 
-  .door {
+  .standfirst {
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: .4rem;
-    align-items: center;
-    max-width: 30rem;
-  }
-
-  .door a {
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    gap: .45rem;
-    align-items: center;
-    border-radius: 3px;
-  }
-
-  .door .title {
-    font-family: var(--sans);
-    font-size: 1.0625rem;
-    font-weight: 550;
-    letter-spacing: -0.005em;
-    color: var(--ink);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: .22em;
-    text-decoration-color: var(--ink-soft);
-    transition: text-decoration-color 160ms ease, color 160ms ease;
-  }
-
-  .door .note {
-    font-size: .9375rem;
-    line-height: 1.5;
+    max-width: 26rem;
+    font-size: clamp(1rem, .95rem + .35vw, 1.125rem);
+    line-height: 1.55;
     color: var(--ink-soft);
+    text-wrap: balance;
   }
-
-  .door a:hover .title { color: var(--accent); text-decoration-color: var(--accent); }
-  .door a:hover .note { color: var(--ink); }
 
   a:focus-visible {
     outline: 2px solid var(--accent);
@@ -286,11 +255,14 @@
 
   <h1>lastknown<span class="tld">.design</span></h1>
 
-  <p class="door">
-    <a href="https://book.lastknown.design/">
-      <span class="title">Conversation Is the Control Layer</span>
-      <span class="note">A free field guide to designing AI agents that listen, wait and act</span>
-    </a>
+  <!--
+    No book link here yet. The manuscript is not finished, so the site
+    does not advertise it. When the book launches, the door goes back in
+    and this comment goes out.
+  -->
+
+  <p class="standfirst">
+    A practice and a body of work on how AI agents should behave.
   </p>
 
 </main>
