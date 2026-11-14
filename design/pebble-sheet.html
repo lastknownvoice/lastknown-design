@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pebbles — mark candidates for lastknown.design</title>
+<style>
+  :root {
+    --paper: #faf9f6;
+    --ink: #171614;
+    --ink-soft: #767268;
+    --accent: #8a3324;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    -webkit-font-smoothing: antialiased;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  h1 { font-size: 1.6rem; font-weight: 400; margin: 0 0 .35rem; letter-spacing: -.015em; }
+  h2 { font-size: .8125rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase;
+        color: var(--ink-soft); margin: 3rem 0 1rem; font-family: var(--sans); }
+  p.lede { max-width: 40rem; color: var(--ink-soft); line-height: 1.55; margin: 0 0 1rem; }
+  .row {
+    display: flex; flex-wrap: wrap; gap: 2.5rem 1.75rem;
+    padding: 2rem 1.25rem;
+    border: 1px solid rgba(23,22,20,.10);
+    border-radius: 8px;
+  }
+  .row.dark { background: #131211; border-color: rgba(236,232,224,.12); }
+  .row.dark .tile figcaption { color: #8b867c; }
+  .row.dark .tile figcaption b { color: #ece8e0; }
+
+  .tile { margin: 0; text-align: center; width: 140px; }
+  .tile .stage {
+    height: 100px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: .7rem;
+  }
+  .tile figcaption { font-family: var(--sans); font-size: .8125rem; line-height: 1.4; }
+  .tile figcaption b { display: block; font-weight: 500; color: var(--ink); }
+  .tile figcaption span { color: var(--ink-soft); font-size: .75rem; }
+
+  .favrow { display: flex; flex-wrap: wrap; gap: 1.5rem; padding: 1.25rem; }
+  .fav { margin: 0; text-align: center; font-family: var(--sans); font-size: .75rem; color: var(--ink-soft); }
+  .fav figcaption { margin-top: .4rem; }
+
+  /* ---- Pebbles idle motion, verbatim from the library's styles.js ---- */
+  .part, .outer { transform-box: view-box; transform-origin: center; }
+  .part.p1 { animation: drift calc(3.8s / var(--speed,1)) ease-in-out infinite; }
+  .part.p2 { animation: drift2 calc(4.2s / var(--speed,1)) ease-in-out infinite; }
+  .part.p3 { animation: drift3 calc(3.3s / var(--speed,1)) ease-in-out infinite; }
+  .outer  { animation: breath calc(5s / var(--speed,1)) ease-in-out infinite; }
+
+  @keyframes drift  { 0%,100% { transform: translate(0,0); } 50% { transform: translate(calc(1.5px * var(--motion-amp,1)), calc(2px * var(--motion-amp,1))); } }
+  @keyframes drift2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(calc(3px * var(--motion-amp,1)), calc(-2px * var(--motion-amp,1))); } }
+  @keyframes drift3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(calc(-2px * var(--motion-amp,1)), calc(2px * var(--motion-amp,1))); } }
+  @keyframes breath { 0%,100% { transform: scale(1); } 50% { transform: scale(calc(1 + .035 * var(--motion-amp,1))); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .part, .outer { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Which Pebble should be the lastknown.design mark?</h1>
+<p class="lede">
+  The current mark is a 7&times;7 field of squares with a pulse travelling outward.
+  This replaces it with one character from the Pebbles identity system, rendered at
+  the size the mark actually occupies on the page. Geometry and motion are the
+  library's own &mdash; not a redraw. Pick a character and a colour treatment.
+</p>
+
+<h2>Pebbles palette &mdash; light</h2>
+<div class="row">
+      <figure class="tile" data-theme="light">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Arch">
+          <g class="outer">
+          <g class="part p1" fill="#0073F5"><path d="M12 83V45a26 26 0 0 1 52 0v38Z" /></g>
+          <g class="part p2" fill="#27D3BC"><rect x="46" y="16" width="40" height="49" rx="19" /></g>
+          <g class="part p3" fill="#5746B2"><circle cx="73" cy="73" r="17" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Arch</b><span>Pebbles bold</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="light">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Pip">
+          <g class="outer">
+          <g class="part p1" fill="#27D3BC"><rect x="17" y="14" width="49" height="69" rx="24" /></g>
+          <g class="part p2" fill="#FFC800"><circle cx="66" cy="42" r="20" /></g>
+          <g class="part p3" fill="#0073F5"><circle cx="66" cy="65" r="16" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Pip</b><span>Pebbles bold</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="light">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Block">
+          <g class="outer">
+          <g class="part p1" fill="#FFC800"><rect x="13" y="17" width="60" height="60" rx="13" /></g>
+          <g class="part p2" fill="#FF492C"><circle cx="69" cy="43" r="21" /></g>
+          <g class="part p3" fill="#5746B2"><rect x="39" y="55" width="55" height="29" rx="14.5" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Block</b><span>Pebbles bold</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="light">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Orbit">
+          <g class="outer">
+          <g class="part p1" fill="#FF492C"><circle cx="44" cy="52" r="32" /></g>
+          <g class="part p2" fill="#0073F5"><rect x="47" y="17.5" width="38" height="44" rx="19" /></g>
+          <g class="part p3" fill="#FFC800"><circle cx="65" cy="64" r="18" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Orbit</b><span>Pebbles bold</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="light">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Offset">
+          <g class="outer">
+          <g class="part p1" fill="#5746B2"><rect x="19" y="14" width="43" height="73" rx="21" /></g>
+          <g class="part p2" fill="#0073F5"><rect x="40" y="43" width="49" height="29" rx="14.5" /></g>
+          <g class="part p3" fill="#27D3BC"><circle cx="71" cy="41" r="17" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Offset</b><span>Pebbles bold</span></figcaption>
+      </figure>
+</div>
+
+<h2>Pebbles palette &mdash; dark</h2>
+<div class="row dark">
+      <figure class="tile" data-theme="dark">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Arch">
+          <g class="outer">
+          <g class="part p1" fill="#77B7FF"><path d="M12 83V45a26 26 0 0 1 52 0v38Z" /></g>
+          <g class="part p2" fill="#73E1D1"><rect x="46" y="16" width="40" height="49" rx="19" /></g>
+          <g class="part p3" fill="#B8AAF5"><circle cx="73" cy="73" r="17" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Arch</b><span>Pebbles bold</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="dark">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Pip">
+          <g class="outer">
+          <g class="part p1" fill="#73E1D1"><rect x="17" y="14" width="49" height="69" rx="24" /></g>
+          <g class="part p2" fill="#FFE16A"><circle cx="66" cy="42" r="20" /></g>
+          <g class="part p3" fill="#77B7FF"><circle cx="66" cy="65" r="16" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Pip</b><span>Pebbles bold</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="dark">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Block">
+          <g class="outer">
+          <g class="part p1" fill="#FFE16A"><rect x="13" y="17" width="60" height="60" rx="13" /></g>
+          <g class="part p2" fill="#FF806D"><circle cx="69" cy="43" r="21" /></g>
+          <g class="part p3" fill="#B8AAF5"><rect x="39" y="55" width="55" height="29" rx="14.5" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Block</b><span>Pebbles bold</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="dark">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Orbit">
+          <g class="outer">
+          <g class="part p1" fill="#FF9B87"><circle cx="44" cy="52" r="32" /></g>
+          <g class="part p2" fill="#83BAFF"><rect x="47" y="17.5" width="38" height="44" rx="19" /></g>
+          <g class="part p3" fill="#FFE16A"><circle cx="65" cy="64" r="18" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Orbit</b><span>Pebbles bold</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="dark">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Offset">
+          <g class="outer">
+          <g class="part p1" fill="#B8AAF5"><rect x="19" y="14" width="43" height="73" rx="21" /></g>
+          <g class="part p2" fill="#77B7FF"><rect x="40" y="43" width="49" height="29" rx="14.5" /></g>
+          <g class="part p3" fill="#73E1D1"><circle cx="71" cy="41" r="17" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Offset</b><span>Pebbles bold</span></figcaption>
+      </figure>
+</div>
+
+<h2>Last Known accent &mdash; light</h2>
+<div class="row">
+      <figure class="tile" data-theme="light">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Arch">
+          <g class="outer">
+          <g class="part p1" fill="#8a3324"><path d="M12 83V45a26 26 0 0 1 52 0v38Z" /></g>
+          <g class="part p2" fill="#b85c43"><rect x="46" y="16" width="40" height="49" rx="19" /></g>
+          <g class="part p3" fill="#d99a84"><circle cx="73" cy="73" r="17" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Arch</b><span>Last Known accent</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="light">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Pip">
+          <g class="outer">
+          <g class="part p1" fill="#8a3324"><rect x="17" y="14" width="49" height="69" rx="24" /></g>
+          <g class="part p2" fill="#c2705a"><circle cx="66" cy="42" r="20" /></g>
+          <g class="part p3" fill="#e0ab97"><circle cx="66" cy="65" r="16" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Pip</b><span>Last Known accent</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="light">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Block">
+          <g class="outer">
+          <g class="part p1" fill="#8a3324"><rect x="13" y="17" width="60" height="60" rx="13" /></g>
+          <g class="part p2" fill="#a84733"><circle cx="69" cy="43" r="21" /></g>
+          <g class="part p3" fill="#cf8570"><rect x="39" y="55" width="55" height="29" rx="14.5" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Block</b><span>Last Known accent</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="light">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Orbit">
+          <g class="outer">
+          <g class="part p1" fill="#8a3324"><circle cx="44" cy="52" r="32" /></g>
+          <g class="part p2" fill="#c2705a"><rect x="47" y="17.5" width="38" height="44" rx="19" /></g>
+          <g class="part p3" fill="#e0ab97"><circle cx="65" cy="64" r="18" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Orbit</b><span>Last Known accent</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="light">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Offset">
+          <g class="outer">
+          <g class="part p1" fill="#8a3324"><rect x="19" y="14" width="43" height="73" rx="21" /></g>
+          <g class="part p2" fill="#a84733"><rect x="40" y="43" width="49" height="29" rx="14.5" /></g>
+          <g class="part p3" fill="#cf8570"><circle cx="71" cy="41" r="17" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Offset</b><span>Last Known accent</span></figcaption>
+      </figure>
+</div>
+
+<h2>Last Known accent &mdash; dark</h2>
+<div class="row dark">
+      <figure class="tile" data-theme="dark">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Arch">
+          <g class="outer">
+          <g class="part p1" fill="#d99a84"><path d="M12 83V45a26 26 0 0 1 52 0v38Z" /></g>
+          <g class="part p2" fill="#b85c43"><rect x="46" y="16" width="40" height="49" rx="19" /></g>
+          <g class="part p3" fill="#8a3324"><circle cx="73" cy="73" r="17" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Arch</b><span>Last Known accent</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="dark">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Pip">
+          <g class="outer">
+          <g class="part p1" fill="#e0ab97"><rect x="17" y="14" width="49" height="69" rx="24" /></g>
+          <g class="part p2" fill="#c2705a"><circle cx="66" cy="42" r="20" /></g>
+          <g class="part p3" fill="#8a3324"><circle cx="66" cy="65" r="16" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Pip</b><span>Last Known accent</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="dark">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Block">
+          <g class="outer">
+          <g class="part p1" fill="#cf8570"><rect x="13" y="17" width="60" height="60" rx="13" /></g>
+          <g class="part p2" fill="#a84733"><circle cx="69" cy="43" r="21" /></g>
+          <g class="part p3" fill="#8a3324"><rect x="39" y="55" width="55" height="29" rx="14.5" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Block</b><span>Last Known accent</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="dark">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Orbit">
+          <g class="outer">
+          <g class="part p1" fill="#e0ab97"><circle cx="44" cy="52" r="32" /></g>
+          <g class="part p2" fill="#c2705a"><rect x="47" y="17.5" width="38" height="44" rx="19" /></g>
+          <g class="part p3" fill="#8a3324"><circle cx="65" cy="64" r="18" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Orbit</b><span>Last Known accent</span></figcaption>
+      </figure>
+      <figure class="tile" data-theme="dark">
+        <div class="stage"><svg viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Offset">
+          <g class="outer">
+          <g class="part p1" fill="#cf8570"><rect x="19" y="14" width="43" height="73" rx="21" /></g>
+          <g class="part p2" fill="#a84733"><rect x="40" y="43" width="49" height="29" rx="14.5" /></g>
+          <g class="part p3" fill="#8a3324"><circle cx="71" cy="41" r="17" /></g>
+          </g>
+        </svg></div>
+        <figcaption><b>Offset</b><span>Last Known accent</span></figcaption>
+      </figure>
+</div>
+
+<h2>Favicon candidates &mdash; Pebbles palette</h2>
+<div class="row favrow">
+      <figure class="fav">
+        <img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22 width=%2228%22 height=%2228%22 role=%22img%22 aria-label=%22Arch%22%3E
+  %3Cg class=%22outer%22%3E%3Cg class=%22part p1%22 fill=%22%230073F5%22%3E%3Cpath d=%22M12 83V45a26 26 0 0 1 52 0v38Z%22 /%3E%3C/g%3E
+          %3Cg class=%22part p2%22 fill=%22%2327D3BC%22%3E%3Crect x=%2246%22 y=%2216%22 width=%2240%22 height=%2249%22 rx=%2219%22 /%3E%3C/g%3E
+          %3Cg class=%22part p3%22 fill=%22%235746B2%22%3E%3Ccircle cx=%2273%22 cy=%2273%22 r=%2217%22 /%3E%3C/g%3E%3C/g%3E
+%3C/svg%3E" width="28" height="28" alt="" />
+        <figcaption>Arch</figcaption>
+      </figure>
+      <figure class="fav">
+        <img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22 width=%2228%22 height=%2228%22 role=%22img%22 aria-label=%22Pip%22%3E
+  %3Cg class=%22outer%22%3E%3Cg class=%22part p1%22 fill=%22%2327D3BC%22%3E%3Crect x=%2217%22 y=%2214%22 width=%2249%22 height=%2269%22 rx=%2224%22 /%3E%3C/g%3E
+          %3Cg class=%22part p2%22 fill=%22%23FFC800%22%3E%3Ccircle cx=%2266%22 cy=%2242%22 r=%2220%22 /%3E%3C/g%3E
+          %3Cg class=%22part p3%22 fill=%22%230073F5%22%3E%3Ccircle cx=%2266%22 cy=%2265%22 r=%2216%22 /%3E%3C/g%3E%3C/g%3E
+%3C/svg%3E" width="28" height="28" alt="" />
+        <figcaption>Pip</figcaption>
+      </figure>
+      <figure class="fav">
+        <img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22 width=%2228%22 height=%2228%22 role=%22img%22 aria-label=%22Block%22%3E
+  %3Cg class=%22outer%22%3E%3Cg class=%22part p1%22 fill=%22%23FFC800%22%3E%3Crect x=%2213%22 y=%2217%22 width=%2260%22 height=%2260%22 rx=%2213%22 /%3E%3C/g%3E
+          %3Cg class=%22part p2%22 fill=%22%23FF492C%22%3E%3Ccircle cx=%2269%22 cy=%2243%22 r=%2221%22 /%3E%3C/g%3E
+          %3Cg class=%22part p3%22 fill=%22%235746B2%22%3E%3Crect x=%2239%22 y=%2255%22 width=%2255%22 height=%2229%22 rx=%2214.5%22 /%3E%3C/g%3E%3C/g%3E
+%3C/svg%3E" width="28" height="28" alt="" />
+        <figcaption>Block</figcaption>
+      </figure>
+      <figure class="fav">
+        <img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22 width=%2228%22 height=%2228%22 role=%22img%22 aria-label=%22Orbit%22%3E
+  %3Cg class=%22outer%22%3E%3Cg class=%22part p1%22 fill=%22%23FF492C%22%3E%3Ccircle cx=%2244%22 cy=%2252%22 r=%2232%22 /%3E%3C/g%3E
+          %3Cg class=%22part p2%22 fill=%22%230073F5%22%3E%3Crect x=%2247%22 y=%2217.5%22 width=%2238%22 height=%2244%22 rx=%2219%22 /%3E%3C/g%3E
+          %3Cg class=%22part p3%22 fill=%22%23FFC800%22%3E%3Ccircle cx=%2265%22 cy=%2264%22 r=%2218%22 /%3E%3C/g%3E%3C/g%3E
+%3C/svg%3E" width="28" height="28" alt="" />
+        <figcaption>Orbit</figcaption>
+      </figure>
+      <figure class="fav">
+        <img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22 width=%2228%22 height=%2228%22 role=%22img%22 aria-label=%22Offset%22%3E
+  %3Cg class=%22outer%22%3E%3Cg class=%22part p1%22 fill=%22%235746B2%22%3E%3Crect x=%2219%22 y=%2214%22 width=%2243%22 height=%2273%22 rx=%2221%22 /%3E%3C/g%3E
+          %3Cg class=%22part p2%22 fill=%22%230073F5%22%3E%3Crect x=%2240%22 y=%2243%22 width=%2249%22 height=%2229%22 rx=%2214.5%22 /%3E%3C/g%3E
+          %3Cg class=%22part p3%22 fill=%22%2327D3BC%22%3E%3Ccircle cx=%2271%22 cy=%2241%22 r=%2217%22 /%3E%3C/g%3E%3C/g%3E
+%3C/svg%3E" width="28" height="28" alt="" />
+        <figcaption>Offset</figcaption>
+      </figure>
+</div>
+
+<h2>Favicon candidates &mdash; Last Known accent</h2>
+<div class="row favrow">
+      <figure class="fav">
+        <img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22 width=%2228%22 height=%2228%22 role=%22img%22 aria-label=%22Arch%22%3E
+  %3Cg class=%22outer%22%3E%3Cg class=%22part p1%22 fill=%22%238a3324%22%3E%3Cpath d=%22M12 83V45a26 26 0 0 1 52 0v38Z%22 /%3E%3C/g%3E
+          %3Cg class=%22part p2%22 fill=%22%23b85c43%22%3E%3Crect x=%2246%22 y=%2216%22 width=%2240%22 height=%2249%22 rx=%2219%22 /%3E%3C/g%3E
+          %3Cg class=%22part p3%22 fill=%22%23d99a84%22%3E%3Ccircle cx=%2273%22 cy=%2273%22 r=%2217%22 /%3E%3C/g%3E%3C/g%3E
+%3C/svg%3E" width="28" height="28" alt="" />
+        <figcaption>Arch</figcaption>
+      </figure>
+      <figure class="fav">
+        <img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22 width=%2228%22 height=%2228%22 role=%22img%22 aria-label=%22Pip%22%3E
+  %3Cg class=%22outer%22%3E%3Cg class=%22part p1%22 fill=%22%238a3324%22%3E%3Crect x=%2217%22 y=%2214%22 width=%2249%22 height=%2269%22 rx=%2224%22 /%3E%3C/g%3E
+          %3Cg class=%22part p2%22 fill=%22%23c2705a%22%3E%3Ccircle cx=%2266%22 cy=%2242%22 r=%2220%22 /%3E%3C/g%3E
+          %3Cg class=%22part p3%22 fill=%22%23e0ab97%22%3E%3Ccircle cx=%2266%22 cy=%2265%22 r=%2216%22 /%3E%3C/g%3E%3C/g%3E
+%3C/svg%3E" width="28" height="28" alt="" />
+        <figcaption>Pip</figcaption>
+      </figure>
+      <figure class="fav">
+        <img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22 width=%2228%22 height=%2228%22 role=%22img%22 aria-label=%22Block%22%3E
+  %3Cg class=%22outer%22%3E%3Cg class=%22part p1%22 fill=%22%238a3324%22%3E%3Crect x=%2213%22 y=%2217%22 width=%2260%22 height=%2260%22 rx=%2213%22 /%3E%3C/g%3E
+          %3Cg class=%22part p2%22 fill=%22%23a84733%22%3E%3Ccircle cx=%2269%22 cy=%2243%22 r=%2221%22 /%3E%3C/g%3E
+          %3Cg class=%22part p3%22 fill=%22%23cf8570%22%3E%3Crect x=%2239%22 y=%2255%22 width=%2255%22 height=%2229%22 rx=%2214.5%22 /%3E%3C/g%3E%3C/g%3E
+%3C/svg%3E" width="28" height="28" alt="" />
+        <figcaption>Block</figcaption>
+      </figure>
+      <figure class="fav">
+        <img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22 width=%2228%22 height=%2228%22 role=%22img%22 aria-label=%22Orbit%22%3E
+  %3Cg class=%22outer%22%3E%3Cg class=%22part p1%22 fill=%22%238a3324%22%3E%3Ccircle cx=%2244%22 cy=%2252%22 r=%2232%22 /%3E%3C/g%3E
+          %3Cg class=%22part p2%22 fill=%22%23c2705a%22%3E%3Crect x=%2247%22 y=%2217.5%22 width=%2238%22 height=%2244%22 rx=%2219%22 /%3E%3C/g%3E
+          %3Cg class=%22part p3%22 fill=%22%23e0ab97%22%3E%3Ccircle cx=%2265%22 cy=%2264%22 r=%2218%22 /%3E%3C/g%3E%3C/g%3E
+%3C/svg%3E" width="28" height="28" alt="" />
+        <figcaption>Orbit</figcaption>
+      </figure>
+      <figure class="fav">
+        <img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22 width=%2228%22 height=%2228%22 role=%22img%22 aria-label=%22Offset%22%3E
+  %3Cg class=%22outer%22%3E%3Cg class=%22part p1%22 fill=%22%238a3324%22%3E%3Crect x=%2219%22 y=%2214%22 width=%2243%22 height=%2273%22 rx=%2221%22 /%3E%3C/g%3E
+          %3Cg class=%22part p2%22 fill=%22%23a84733%22%3E%3Crect x=%2240%22 y=%2243%22 width=%2249%22 height=%2229%22 rx=%2214.5%22 /%3E%3C/g%3E
+          %3Cg class=%22part p3%22 fill=%22%23cf8570%22%3E%3Ccircle cx=%2271%22 cy=%2241%22 r=%2217%22 /%3E%3C/g%3E%3C/g%3E
+%3C/svg%3E" width="28" height="28" alt="" />
+        <figcaption>Offset</figcaption>
+      </figure>
+</div>
+
+</body>
+</html>
