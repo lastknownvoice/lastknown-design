@@ -8,21 +8,20 @@
 <meta property="og:title" content="lastknown.design">
 <meta property="og:description" content="Last Known Design — a practice and a body of work on how AI agents should behave.">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#131211" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FFA918" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1B262E" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://lastknown.design/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Cg fill=%22%230073F5%22%3E%3Cpath d=%22M12 83V45a26 26 0 0 1 52 0v38Z%22 /%3E%3C/g%3E
-  %3Cg fill=%22%2366AEFF%22%3E%3Crect x=%2246%22 y=%2216%22 width=%2240%22 height=%2249%22 rx=%2219%22 /%3E%3C/g%3E
-  %3Cg fill=%22%23FF492C%22%3E%3Ccircle cx=%2273%22 cy=%2273%22 r=%2217%22 /%3E%3C/g%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%2228%22 y=%2224%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2236%22 y=%2224%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2224%22 y=%2228%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2228%22 y=%2228%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2232%22 y=%2228%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2236%22 y=%2228%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2240%22 y=%2228%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2224%22 y=%2232%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2228%22 y=%2232%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2232%22 y=%2232%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2236%22 y=%2232%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2240%22 y=%2232%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2228%22 y=%2236%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2232%22 y=%2236%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2236%22 y=%2236%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3Crect x=%2232%22 y=%2240%22 width=%224%22 height=%224%22 fill=%22%23FD447E%22/%3E%3C/svg%3E">
 
 <style>
   :root {
-    --paper:      #faf9f6;
-    --ink:        #171614;
-    --ink-soft:   #767268;
-    --accent:     #8a3324;
+    --ground:  #FFA918;
+    --ink:     #2F414D;
+    --pink:    #FD447E;
+    --pale:    #EFD8C9;
 
-    --mark-size:  clamp(84px, 20vw, 128px);
+    --cell:    clamp(4px, 1.1vw, 6px);
+    --gap:     clamp(1.5px, .42vw, 2.5px);
 
     --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
     --sans:  ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
@@ -30,10 +29,10 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --paper:    #131211;
-      --ink:      #ece8e0;
-      --ink-soft: #8b867c;
-      --accent:   #e08b74;
+      --ground: #1B262E;
+      --ink:    #F2A919;
+      --pink:   #FF6E9C;
+      --pale:   #F5E3D8;
     }
   }
 
@@ -46,7 +45,7 @@
     min-height: 100svh;
     display: flex;
     flex-direction: column;
-    background: var(--paper);
+    background: var(--ground);
     color: var(--ink);
     font-family: var(--serif);
     -webkit-font-smoothing: antialiased;
@@ -67,53 +66,64 @@
   /* ---------- the mark ---------- */
 
   /*
-    Arch, from the Pebbles agent identity system.
+    Huxley, the 24x24 cellular canvas: X-shaped eyes, a neutral mouth,
+    and a heart at the chest that beats.
 
-    The three parts drift independently on a slow loop while the whole
-    form breathes. Motion, colours and geometry come from the library --
-    see pebbles/data.js and pebbles/styles.js.
+    The shape and the lub-dub timing come from the Huxley source. The
+    colourway comes from A to Z of The Designers Republic.
   */
 
   .mark {
-    width: var(--mark-size);
-    height: var(--mark-size);
+    display: grid;
+    grid-template-columns: repeat(24, var(--cell));
+    grid-auto-rows: var(--cell);
+    gap: var(--gap);
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  .mark i {
     display: block;
+    background: var(--ink);
+    border-radius: 1px;
+    opacity: var(--o);
   }
 
-  .mark svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
+  .mark i.eye   { background: var(--ink); }
+  .mark i.mouth { background: var(--ink); }
+
+  /* The heart is the life signal, and it carries the pink. */
+  .mark i.heart {
+    background: var(--pink);
+    animation: var(--beat, beat) 2.2s cubic-bezier(.4, 0, .2, 1) infinite;
   }
 
-  .mark .part,
-  .mark .outer {
-    transform-box: view-box;
-    transform-origin: center;
+  /*
+    A lub-dub, not a fade.
+
+    Huxley beats at full strength, drops to half 180ms later, and goes
+    dark 360ms after that. Holding each value briefly makes the two
+    beats read as two beats rather than one long dimming -- the drop
+    between them is the thing your eye catches.
+
+    The centre cell of the heart stays dimmer throughout, as it does in
+    Huxley, so the shape has a focal point instead of reading as a
+    solid blob.
+  */
+  @keyframes beat {
+    0%, 6%   { opacity: 1; }
+    9%       { opacity: .45; }
+    13%, 20% { opacity: .5; }
+    26%, 100% { opacity: 0; }
   }
 
-  .mark .part.p1 { animation: drift  calc(3.8s / var(--speed, 1)) ease-in-out infinite; }
-  .mark .part.p2 { animation: drift2 calc(4.2s / var(--speed, 1)) ease-in-out infinite; }
-  .mark .part.p3 { animation: drift3 calc(3.3s / var(--speed, 1)) ease-in-out infinite; }
-  .mark .outer   { animation: breath calc(5s   / var(--speed, 1)) ease-in-out infinite; }
-
-  /* The library keeps a dark palette for every colourway. Swap to it
-     when the OS is dark, the same way the component does. */
-  @media (prefers-color-scheme: dark) {
-    .mark .part { fill: var(--dark-fill); }
+  @keyframes beat-mid {
+    0%, 6%   { opacity: .35; }
+    9%       { opacity: .16; }
+    13%, 20% { opacity: .175; }
+    26%, 100% { opacity: 0; }
   }
-
-  @keyframes drift { 0%,100%{transform:translate(0,0)}50%{transform:translate(calc(1.5px * var(--motion-amp, 1)),calc(2px * var(--motion-amp, 1)))} }
-
-  @keyframes drift2 { 0%,100%{transform:translate(0,0)}50%{transform:translate(calc(3px * var(--motion-amp, 1)),calc(-2px * var(--motion-amp, 1)))} }
-
-  @keyframes drift3 { 0%,100%{transform:translate(0,0)}50%{transform:translate(calc(-2px * var(--motion-amp, 1)),calc(2px * var(--motion-amp, 1)))} }
-
-  @keyframes breath { 0%,100%{transform:scale(1)}50%{transform:scale(calc(1 + .035 * var(--motion-amp,1)))} }
 
   /* ---------- the name ---------- */
 
@@ -125,7 +135,7 @@
     letter-spacing: -0.022em;
     text-wrap: balance;
   }
-  h1 .tld { color: var(--accent); }
+  h1 .tld { color: var(--pink); }
 
   /* ---------- the standfirst ---------- */
 
@@ -134,12 +144,12 @@
     max-width: 26rem;
     font-size: clamp(1rem, .95rem + .35vw, 1.125rem);
     line-height: 1.55;
-    color: var(--ink-soft);
+    color: var(--ink);
     text-wrap: balance;
   }
 
   a:focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--pink);
     outline-offset: 4px;
   }
 
@@ -153,7 +163,7 @@
     padding: 1.5rem 1.5rem 2.25rem;
     font-family: var(--sans);
     font-size: .8125rem;
-    color: var(--ink-soft);
+    color: var(--ink);
   }
   footer a {
     color: inherit;
@@ -161,11 +171,11 @@
     border-bottom: 1px solid transparent;
     transition: color 160ms ease, border-color 160ms ease;
   }
-  footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
-  footer .dot { color: var(--ink-soft); opacity: .5; }
+  footer a:hover { color: var(--pink); border-bottom-color: var(--pink); }
+  footer .dot { opacity: .45; }
 
   @media (prefers-reduced-motion: reduce) {
-    .mark .part, .mark .outer { animation: none; }
+    .mark i.heart { animation: none; opacity: 1; }
     * { transition: none !important; }
   }
 </style>
@@ -174,14 +184,61 @@
 
 <main>
 
-  <div class="mark" role="img" aria-label="Last Known Design">
-    <svg viewBox="0 0 100 100" aria-hidden="true">
-      <g class="outer">
-          <g class="part p1" style="fill: #0073F5; --dark-fill: #77B7FF"><path d="M12 83V45a26 26 0 0 1 52 0v38Z" /></g>
-          <g class="part p2" style="fill: #66AEFF; --dark-fill: #347BD1"><rect x="46" y="16" width="40" height="49" rx="19" /></g>
-          <g class="part p3" style="fill: #FF492C; --dark-fill: #FF806D"><circle cx="73" cy="73" r="17" /></g>
-      </g>
-    </svg>
+  <div class="mark" role="img" aria-label="Huxley, a cellular canvas character with a beating heart">
+    <i class="c eye" style="grid-area:7/6;--o:1.0"></i>
+        <i class="c eye" style="grid-area:7/10;--o:1.0"></i>
+        <i class="c eye" style="grid-area:8/7;--o:1.0"></i>
+        <i class="c eye" style="grid-area:8/9;--o:1.0"></i>
+        <i class="c eye" style="grid-area:9/8;--o:0.22"></i>
+        <i class="c eye" style="grid-area:10/7;--o:1.0"></i>
+        <i class="c eye" style="grid-area:10/9;--o:1.0"></i>
+        <i class="c eye" style="grid-area:11/6;--o:1.0"></i>
+        <i class="c eye" style="grid-area:11/10;--o:1.0"></i>
+        <i class="c eye" style="grid-area:7/15;--o:1.0"></i>
+        <i class="c eye" style="grid-area:7/19;--o:1.0"></i>
+        <i class="c eye" style="grid-area:8/16;--o:1.0"></i>
+        <i class="c eye" style="grid-area:8/18;--o:1.0"></i>
+        <i class="c eye" style="grid-area:9/17;--o:0.22"></i>
+        <i class="c eye" style="grid-area:10/16;--o:1.0"></i>
+        <i class="c eye" style="grid-area:10/18;--o:1.0"></i>
+        <i class="c eye" style="grid-area:11/15;--o:1.0"></i>
+        <i class="c eye" style="grid-area:11/19;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/8;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/9;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/10;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/11;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/12;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/13;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/14;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/15;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/16;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/17;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/8;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/9;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/10;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/11;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/12;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/13;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/14;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/15;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/16;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/17;--o:1.0"></i>
+        <i class="c heart" style="grid-area:18/12;--o:1.0"></i>
+        <i class="c heart" style="grid-area:18/14;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/11;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/12;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/13;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/14;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/15;--o:1.0"></i>
+        <i class="c heart" style="grid-area:20/11;--o:1.0"></i>
+        <i class="c heart" style="grid-area:20/12;--o:1.0"></i>
+        <i class="c heart" style="grid-area:20/13;--o:1.0;--beat: beat-mid"></i>
+        <i class="c heart" style="grid-area:20/14;--o:1.0"></i>
+        <i class="c heart" style="grid-area:20/15;--o:1.0"></i>
+        <i class="c heart" style="grid-area:21/12;--o:1.0"></i>
+        <i class="c heart" style="grid-area:21/13;--o:1.0"></i>
+        <i class="c heart" style="grid-area:21/14;--o:1.0"></i>
+        <i class="c heart" style="grid-area:22/13;--o:1.0"></i>
   </div>
 
   <h1>lastknown<span class="tld">.design</span></h1>

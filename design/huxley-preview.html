@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Huxley mark — light and dark</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #6b6560; color: #171614;
+    font-family: ui-sans-serif, -apple-system, sans-serif;
+    padding: 2rem; display: flex; gap: 2rem; flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .panel {
+    flex: 1 1 340px; padding: 2.5rem 1.5rem 1.5rem;
+    border-radius: 10px; position: relative;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .panel.light { background: #FFA918; color: #2F414D; }
+  .panel.dark  { background: #1B262E; color: #F2A919; }
+
+  .mark-wrap {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; text-align: center;
+    gap: clamp(1.5rem, 4vw, 2.5rem); padding: 1rem 0 2rem;
+  }
+
+  .mark {
+    display: grid; grid-template-columns: repeat(24, 6px);
+    grid-auto-rows: 6px; gap: 2px; margin: 0; padding: 0; list-style: none;
+  }
+  .mark i { display:block; border-radius: 1px; }
+  .panel.light .mark i.eye, .panel.light .mark i.mouth { background: #2F414D; }
+  .panel.dark  .mark i.eye, .panel.dark  .mark i.mouth { background: #F2A919; }
+  .panel.light .mark i.heart { background: #FD447E; animation: var(--beat, beat) 2.2s cubic-bezier(.4,0,.2,1) infinite; }
+  .panel.dark  .mark i.heart { background: #FF6E9C; animation: var(--beat, beat) 2.2s cubic-bezier(.4,0,.2,1) infinite; }
+
+  @keyframes beat {
+    0%, 6% {opacity:1} 9% {opacity:.45} 13%, 20% {opacity:.5} 26%, 100% {opacity:0}
+  }
+  @keyframes beat-mid {
+    0%, 6% {opacity:.35} 9% {opacity:.16} 13%, 20% {opacity:.175} 26%, 100% {opacity:0}
+  }
+
+  h1 {
+    margin: 0; font-size: clamp(1.8rem, 1rem + 5vw, 3.4rem); font-weight: 400;
+    line-height: 1; letter-spacing: -.022em;
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  }
+  h1 .tld { color: #FD447E; }
+  .panel.dark h1 .tld { color: #FF6E9C; }
+
+  .standfirst {
+    margin: 0; max-width: 22rem; font-size: 1rem; line-height: 1.55;
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  }
+
+  .label {
+    margin: 0 0 .8rem; font-size: .75rem; letter-spacing: .16em;
+    text-transform: uppercase; opacity: .65; font-weight: 500;
+  }
+  .swatches {
+    list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap;
+    gap: .35rem 1rem; font-size: .75rem; font-family: ui-monospace, monospace;
+    opacity: .8;
+  }
+  .swatches li { display: flex; align-items: center; gap: .4rem; }
+  .swatches span { width: .8rem; height: .8rem; border-radius: 2px; border: 1px solid rgba(0,0,0,.2); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mark i.heart { animation: none !important; opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+  <section class="panel light">
+    <div class="mark-wrap">
+      <div class="mark" role="img" aria-label="Huxley">
+        <i class="c eye" style="grid-area:7/6;--o:1.0"></i>
+        <i class="c eye" style="grid-area:7/10;--o:1.0"></i>
+        <i class="c eye" style="grid-area:8/7;--o:1.0"></i>
+        <i class="c eye" style="grid-area:8/9;--o:1.0"></i>
+        <i class="c eye" style="grid-area:9/8;--o:0.22"></i>
+        <i class="c eye" style="grid-area:10/7;--o:1.0"></i>
+        <i class="c eye" style="grid-area:10/9;--o:1.0"></i>
+        <i class="c eye" style="grid-area:11/6;--o:1.0"></i>
+        <i class="c eye" style="grid-area:11/10;--o:1.0"></i>
+        <i class="c eye" style="grid-area:7/15;--o:1.0"></i>
+        <i class="c eye" style="grid-area:7/19;--o:1.0"></i>
+        <i class="c eye" style="grid-area:8/16;--o:1.0"></i>
+        <i class="c eye" style="grid-area:8/18;--o:1.0"></i>
+        <i class="c eye" style="grid-area:9/17;--o:0.22"></i>
+        <i class="c eye" style="grid-area:10/16;--o:1.0"></i>
+        <i class="c eye" style="grid-area:10/18;--o:1.0"></i>
+        <i class="c eye" style="grid-area:11/15;--o:1.0"></i>
+        <i class="c eye" style="grid-area:11/19;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/8;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/9;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/10;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/11;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/12;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/13;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/14;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/15;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/16;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/17;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/8;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/9;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/10;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/11;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/12;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/13;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/14;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/15;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/16;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/17;--o:1.0"></i>
+        <i class="c heart" style="grid-area:18/12;--o:1.0"></i>
+        <i class="c heart" style="grid-area:18/14;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/11;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/12;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/13;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/14;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/15;--o:1.0"></i>
+        <i class="c heart" style="grid-area:20/11;--o:1.0"></i>
+        <i class="c heart" style="grid-area:20/12;--o:1.0"></i>
+        <i class="c heart" style="grid-area:20/13;--o:1.0;--beat: beat-mid"></i>
+        <i class="c heart" style="grid-area:20/14;--o:1.0"></i>
+        <i class="c heart" style="grid-area:20/15;--o:1.0"></i>
+        <i class="c heart" style="grid-area:21/12;--o:1.0"></i>
+        <i class="c heart" style="grid-area:21/13;--o:1.0"></i>
+        <i class="c heart" style="grid-area:21/14;--o:1.0"></i>
+        <i class="c heart" style="grid-area:22/13;--o:1.0"></i>
+      </div>
+      <h1>lastknown<span class="tld">.design</span></h1>
+      <p class="standfirst">A practice and a body of work on how AI agents should behave.</p>
+    </div>
+    <p class="label">Light — Designers Republic orange</p>
+    <ul class="swatches">
+      <li><span style="background:#FFA918"></span>ground #FFA918</li>
+      <li><span style="background:#2F414D"></span>ink #2F414D</li>
+      <li><span style="background:#FD447E"></span>pink #FD447E</li>
+      <li><span style="background:#EFD8C9"></span>pale #EFD8C9</li>
+    </ul>
+  </section>
+
+  <section class="panel dark">
+    <div class="mark-wrap">
+      <div class="mark" role="img" aria-label="Huxley">
+        <i class="c eye" style="grid-area:7/6;--o:1.0"></i>
+        <i class="c eye" style="grid-area:7/10;--o:1.0"></i>
+        <i class="c eye" style="grid-area:8/7;--o:1.0"></i>
+        <i class="c eye" style="grid-area:8/9;--o:1.0"></i>
+        <i class="c eye" style="grid-area:9/8;--o:0.22"></i>
+        <i class="c eye" style="grid-area:10/7;--o:1.0"></i>
+        <i class="c eye" style="grid-area:10/9;--o:1.0"></i>
+        <i class="c eye" style="grid-area:11/6;--o:1.0"></i>
+        <i class="c eye" style="grid-area:11/10;--o:1.0"></i>
+        <i class="c eye" style="grid-area:7/15;--o:1.0"></i>
+        <i class="c eye" style="grid-area:7/19;--o:1.0"></i>
+        <i class="c eye" style="grid-area:8/16;--o:1.0"></i>
+        <i class="c eye" style="grid-area:8/18;--o:1.0"></i>
+        <i class="c eye" style="grid-area:9/17;--o:0.22"></i>
+        <i class="c eye" style="grid-area:10/16;--o:1.0"></i>
+        <i class="c eye" style="grid-area:10/18;--o:1.0"></i>
+        <i class="c eye" style="grid-area:11/15;--o:1.0"></i>
+        <i class="c eye" style="grid-area:11/19;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/8;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/9;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/10;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/11;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/12;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/13;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/14;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/15;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/16;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:15/17;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/8;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/9;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/10;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/11;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/12;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/13;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/14;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/15;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/16;--o:1.0"></i>
+        <i class="c mouth" style="grid-area:16/17;--o:1.0"></i>
+        <i class="c heart" style="grid-area:18/12;--o:1.0"></i>
+        <i class="c heart" style="grid-area:18/14;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/11;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/12;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/13;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/14;--o:1.0"></i>
+        <i class="c heart" style="grid-area:19/15;--o:1.0"></i>
+        <i class="c heart" style="grid-area:20/11;--o:1.0"></i>
+        <i class="c heart" style="grid-area:20/12;--o:1.0"></i>
+        <i class="c heart" style="grid-area:20/13;--o:1.0;--beat: beat-mid"></i>
+        <i class="c heart" style="grid-area:20/14;--o:1.0"></i>
+        <i class="c heart" style="grid-area:20/15;--o:1.0"></i>
+        <i class="c heart" style="grid-area:21/12;--o:1.0"></i>
+        <i class="c heart" style="grid-area:21/13;--o:1.0"></i>
+        <i class="c heart" style="grid-area:21/14;--o:1.0"></i>
+        <i class="c heart" style="grid-area:22/13;--o:1.0"></i>
+      </div>
+      <h1>lastknown<span class="tld">.design</span></h1>
+      <p class="standfirst">A practice and a body of work on how AI agents should behave.</p>
+    </div>
+    <p class="label">Dark — re-grounded on ink</p>
+    <ul class="swatches">
+      <li><span style="background:#1B262E"></span>ground #1B262E</li>
+      <li><span style="background:#F2A919"></span>ink #F2A919</li>
+      <li><span style="background:#FF6E9C"></span>pink #FF6E9C</li>
+      <li><span style="background:#F5E3D8"></span>pale #F5E3D8</li>
+    </ul>
+  </section>
+
+</body>
+</html>

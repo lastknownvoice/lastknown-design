@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
 """Generate the lastknown.design one-pager.
 
-The mark is **Arch** — a character from Ian's Pebbles agent identity
-system: a rounded arch body, a tall rounded rect, and a circle, each in
-its own colour, overlapping.
+The mark is **Huxley** — the 24x24 cellular canvas: X-shaped eyes, a
+neutral mouth, and a heart at the chest that beats.
 
-Geometry and motion are read from the vendored Pebbles library in
-`pebbles/` (data.js and styles.js) rather than transcribed, so the mark
-stays in step with the source of truth. If the library changes, this
-picks the change up.
+The colourway is taken from *A to Z of The Designers Republic* (Thames &
+Hudson): an orange ground, a near-black graphic, a hot pink accent and
+a pale peach for text.
 
-The character is drawn at the size the mark occupies on the page, on the
-site's own background, in the site's own accent.
+Geometry and motion are lifted from the Huxley source so the mark is the
+same character, not a redraw:
+
+  - shape     -> dev/huxley/huxley-24.js (eyes, mouth, heart)
+  - timing    -> dev/huxley/huxley-24.js (the lub-dub heartbeat)
+  - palette   -> sampled from the Designers Republic cover
+
+The character is drawn in SVG, so the page stays a single static file
+with no canvas and no runtime. The heartbeat is CSS keyframes matching
+the lub-dub shape: a hard full-strength beat, a half-strength beat 180ms
+later, then dark.
 
 Run:  python3 scripts/build-markup.py
 Out:  index.html
@@ -21,184 +28,127 @@ import pathlib
 import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+HUXLEY = pathlib.Path("/Users/ianroberts/dev/huxley/huxley-24.js")
 
 # --------------------------------------------------------------------------
-# Read the geometry out of the vendored library
+# The Designers Republic colourway, sampled from the book cover
 # --------------------------------------------------------------------------
 
-CHARACTER = "Arch"
-PALETTE = "accent"        # the library's own palette names
-THEME = "auto"            # light or dark follows the OS
+PALETTE = {
+    "ground": "#FFA918",   # the orange field
+    "ink": "#2F414D",      # the near-black graphic
+    "pink": "#FD447E",     # the hot pink accent
+    "pale": "#EFD8C9",     # the pale peach used for text
+}
+
+# Dark mode: the same four, re-grounded on ink rather than orange.
+PALETTE_DARK = {
+    "ground": "#1B262E",
+    "ink": "#F2A919",
+    "pink": "#FF6E9C",
+    "pale": "#F5E3D8",
+}
 
 
-def load_shapes():
-    """Parse the `shapes` array out of data.js.
+# --------------------------------------------------------------------------
+# Read the character out of the Huxley source
+# --------------------------------------------------------------------------
 
-    The file is one long line of JS. Rather than pull in a JS runtime,
-    we read the array literal and pull out the parts we need with a
-    small regex. The shape we use is a path, a rect and a circle, so
-    the attribute values are simple enough to parse directly.
-    """
-    source = (ROOT / "pebbles" / "data.js").read_text(encoding="utf-8")
-
-    # Each shape is: {name:'Arch',family:'...',parts:[[tag,{attrs}],[...]]}
-    pattern = re.compile(
-        r"\{name:'(?P<name>[^']+)'"
-        r"(?:,family:'[^']*')?"
-        r",parts:\[(?P<parts>.*?)\]\}"
-    )
-    for match in pattern.finditer(source):
-        if match.group("name") != CHARACTER:
-            continue
-        return parse_parts(match.group("parts"))
-    raise SystemExit(f"could not find character {CHARACTER!r} in pebbles/data.js")
+def load_heart():
+    """The heart's cell offsets, relative to its centre."""
+    source = HUXLEY.read_text(encoding="utf-8")
+    block = re.search(r"const HEART_SHAPE\s*=\s*\[(.*?)\];", source, re.S)
+    if not block:
+        raise SystemExit("could not find HEART_SHAPE in huxley-24.js")
+    offsets = re.findall(r"\[\s*(-?\d+)\s*,\s*(-?\d+)\s*\]", block.group(1))
+    return [(int(x), int(y)) for x, y in offsets]
 
 
-def parse_parts(raw):
-    """Turn `['path',{d:'M12...'}],['rect',{x:46,...}]` into a list."""
-    parts = []
-    for tag, attrs in re.findall(
-        r"\['(?P<tag>[a-z]+)',\{(?P<attrs>[^}]*)\}\]", raw
-    ):
-        attributes = {}
-        for key, value in re.findall(r"(\w+):('[^']*'|[-\d.]+)", attrs):
-            attributes[key] = value.strip("'")
-        parts.append((tag, attributes))
-    return parts
+HEART = load_heart()
+
+# The heart sits at the chest on a 24x24 grid.
+GRID = 24
+HEART_CX = 12
+HEART_CY = 19
+
+# Eyes: 5x5 X shapes, centred at (7, 8) and (16, 8).
+EYE_SIZE = 5
+EYE_L = (7, 8)
+EYE_R = (16, 8)
+
+# Mouth: a 2-row neutral line, cols 7..16, rows 14..15.
+MOUTH_COLS = range(7, 17)
+MOUTH_ROWS = (14, 15)
 
 
-def load_colors():
-    """Pull the palette colours for our character out of data.js.
-
-    Both `palettes` and `paletteDarkVariants` are objects of objects, so
-    we walk them with a brace matcher rather than a regex -- nested
-    braces defeat the obvious pattern.
-
-    Returns (light_colours, dark_colours). Dark comes from the library's
-    own `paletteDarkVariants`, which is what the component uses when the
-    OS is in dark mode.
-    """
-    source = (ROOT / "pebbles" / "data.js").read_text(encoding="utf-8")
-
-    def read(block):
-        # Match the declaration exactly -- `palettes` is a substring of
-        # `paletteDarkVariants`, so a plain find() would match the wrong
-        # one.
-        match = re.search(rf"export const {block}\s*=\s*\{{", source)
-        if not match:
-            return None
-        body, _ = _balanced_object(source, match.end() - 1)
-        palette_body = _member(body, PALETTE)
-        if palette_body is None:
-            return None
-        colors = _member(palette_body, CHARACTER)
-        if not colors:
-            return None
-        return re.findall(r"#[0-9A-Fa-f]{6}", colors)
-
-    light = read("palettes")
-    dark = read("paletteDarkVariants")
-    if not light:
-        raise SystemExit(f"could not find palette {PALETTE!r} in pebbles/data.js")
-    return light, dark or light
+def heart_cells():
+    """The heart as (col, row) pairs on the 24x24 grid."""
+    return [(HEART_CX + lx, HEART_CY + ly) for lx, ly in HEART]
 
 
-def _balanced_object(source, start):
-    """Return (inner_text, end_index) for a brace-delimited object."""
-    depth = 0
-    for index in range(start, len(source)):
-        if source[index] == "{":
-            depth += 1
-        elif source[index] == "}":
-            depth -= 1
-            if depth == 0:
-                return source[start + 1:index], index
-    raise SystemExit("unbalanced braces in data.js")
+def eye_cells(cx, cy):
+    """A 5x5 X: the two diagonals, with the centre dimmed."""
+    half = EYE_SIZE // 2
+    cells = []
+    for dy in range(-half, half + 1):
+        for dx in range(-half, half + 1):
+            if abs(dx) == abs(dy):
+                cells.append((cx + dx, cy + dy, 0.22 if (dx == 0 and dy == 0) else 1.0))
+    return cells
 
 
-def _member(body, key):
-    """Find `key:[...]` or `key:{...}` inside an object body.
-
-    The body may start with whitespace or a newline before its first
-    member, so the boundary check allows any non-identifier character
-    before the key rather than only `,` or `{`.
-    """
-    match = re.search(rf"(?:^|[^A-Za-z0-9_$]){re.escape(key)}\s*:", body)
-    if not match:
-        return None
-    rest = body[match.end():]
-    if rest.lstrip().startswith("["):
-        open_at = body.index("[", match.end())
-        close = body.index("]", open_at)
-        return body[open_at:close + 1]
-    open_at = body.index("{", match.end())
-    inner, _ = _balanced_object(body, open_at)
-    return inner
-
-
-def load_idle_motion():
-    """Pull the idle drift + breath keyframes out of styles.js.
-
-    The library keeps all motion in one stylesheet string. We take the
-    idle rules and the four keyframes they reference.
-    """
-    source = (ROOT / "pebbles" / "styles.js").read_text(encoding="utf-8")
-    # The stylesheet is a JS string literal; unescape the few things we need.
-    source = source.replace("\\n", "\n")
-
-    wanted = ["drift", "drift2", "drift3", "breath"]
-    out = {}
-    for name in wanted:
-        match = re.search(
-            rf"@keyframes {name}\s*\{{(.*?)\}}\s*(?=@keyframes|\.agent|$)", source, re.S
-        )
-        if match:
-            out[name] = match.group(1).strip()
-    if len(out) != len(wanted):
-        raise SystemExit(f"missing keyframes: {set(wanted) - set(out)}")
-    return out
-
-
-SHAPES = load_shapes()
-COLORS, COLORS_DARK = load_colors()
-MOTION = load_idle_motion()
+def mouth_cells():
+    """A 2-row flat mouth, cols 7..16."""
+    return [(x, y, 1.0) for y in MOUTH_ROWS for x in MOUTH_COLS]
 
 
 # --------------------------------------------------------------------------
 # Markup
 # --------------------------------------------------------------------------
 
-def pebble_markup():
-    """The three parts as SVG groups, ready to drop into the page.
+def cell(col, row, cls, opacity=1.0, extra=""):
+    """One grid cell as a div, positioned with the CSS grid."""
+    # `extra` is appended as further declarations, so it needs its own
+    # leading semicolon.
+    suffix = f";{extra}" if extra else ""
+    return (
+        f'<i class="c {cls}" style="grid-area:{row + 1}/{col + 1};'
+        f'--o:{opacity}{suffix}"></i>'
+    )
 
-    Each part carries both colour sets. Light is the default; the dark
-    media query swaps to the library's dark palette variants, which is
-    how the component itself handles the OS theme.
-    """
+
+def mark_cells():
+    """Every lit cell of the character, with its class."""
     out = []
-    for index, (tag, attributes) in enumerate(SHAPES):
-        attrs = " ".join(f'{k}="{v}"' for k, v in attributes.items())
-        light = COLORS[index]
-        dark = COLORS_DARK[index]
-        fill = light if light == dark else f"{light}; --dark-fill: {dark}"
+    for col, row, opacity in eye_cells(*EYE_L) + eye_cells(*EYE_R):
+        out.append(cell(col, row, "eye", opacity))
+    for col, row, opacity in mouth_cells():
+        out.append(cell(col, row, "mouth", opacity))
+    for col, row in heart_cells():
+        # The centre cell of the heart is the focal point and stays
+        # dimmer, as it does in Huxley.
+        is_center = (col == HEART_CX and row == HEART_CY)
         out.append(
-            f'<g class="part p{index + 1}" style="fill: {fill}">'
-            f"<{tag} {attrs} /></g>"
+            cell(col, row, "heart", extra="--beat: beat-mid" if is_center else "")
         )
-    return "\n          ".join(out)
+    return "\n        ".join(out)
 
 
 def favicon_markup():
-    """A still Arch for the favicon -- same geometry, no motion."""
-    body = "\n  ".join(
-        f'<g fill="{COLORS[index]}"><{tag} '
-        + " ".join(f'{k}="{v}"' for k, v in attributes.items())
-        + " /></g>"
-        for index, (tag, attributes) in enumerate(SHAPES)
-    )
+    """A still heart for the favicon — the mark's focal point.
+
+    At 16px the whole 24x24 character is mush, so the favicon carries
+    the heart alone: it is the part that reads at small sizes and the
+    part that carries the beat.
+    """
+    cells = []
+    for col, row in heart_cells():
+        x = (col - HEART_CX) * 4 + 32
+        y = (row - HEART_CY) * 4 + 32
+        cells.append(f'<rect x="{x}" y="{y}" width="4" height="4" fill="{PALETTE["pink"]}"/>')
     return (
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
-        + body
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+        + "".join(cells)
         + "</svg>"
     )
 
@@ -221,19 +171,20 @@ HTML = """<!DOCTYPE html>
 <meta property="og:title" content="lastknown.design">
 <meta property="og:description" content="Last Known Design — a practice and a body of work on how AI agents should behave.">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#131211" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FFA918" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1B262E" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://lastknown.design/">
 <link rel="icon" href="__FAVICON__">
 
 <style>
   :root {
-    --paper:      #faf9f6;
-    --ink:        #171614;
-    --ink-soft:   #767268;
-    --accent:     #8a3324;
+    --ground:  __GROUND__;
+    --ink:     __INK__;
+    --pink:    __PINK__;
+    --pale:    __PALE__;
 
-    --mark-size:  clamp(84px, 20vw, 128px);
+    --cell:    clamp(4px, 1.1vw, 6px);
+    --gap:     clamp(1.5px, .42vw, 2.5px);
 
     --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
     --sans:  ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
@@ -241,10 +192,10 @@ HTML = """<!DOCTYPE html>
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --paper:    #131211;
-      --ink:      #ece8e0;
-      --ink-soft: #8b867c;
-      --accent:   #e08b74;
+      --ground: __GROUND_D__;
+      --ink:    __INK_D__;
+      --pink:   __PINK_D__;
+      --pale:   __PALE_D__;
     }
   }
 
@@ -257,7 +208,7 @@ HTML = """<!DOCTYPE html>
     min-height: 100svh;
     display: flex;
     flex-direction: column;
-    background: var(--paper);
+    background: var(--ground);
     color: var(--ink);
     font-family: var(--serif);
     -webkit-font-smoothing: antialiased;
@@ -278,47 +229,64 @@ HTML = """<!DOCTYPE html>
   /* ---------- the mark ---------- */
 
   /*
-    Arch, from the Pebbles agent identity system.
+    Huxley, the 24x24 cellular canvas: X-shaped eyes, a neutral mouth,
+    and a heart at the chest that beats.
 
-    The three parts drift independently on a slow loop while the whole
-    form breathes. Motion, colours and geometry come from the library --
-    see pebbles/data.js and pebbles/styles.js.
+    The shape and the lub-dub timing come from the Huxley source. The
+    colourway comes from A to Z of The Designers Republic.
   */
 
   .mark {
-    width: var(--mark-size);
-    height: var(--mark-size);
+    display: grid;
+    grid-template-columns: repeat(24, var(--cell));
+    grid-auto-rows: var(--cell);
+    gap: var(--gap);
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  .mark i {
     display: block;
+    background: var(--ink);
+    border-radius: 1px;
+    opacity: var(--o);
   }
 
-  .mark svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
+  .mark i.eye   { background: var(--ink); }
+  .mark i.mouth { background: var(--ink); }
+
+  /* The heart is the life signal, and it carries the pink. */
+  .mark i.heart {
+    background: var(--pink);
+    animation: var(--beat, beat) 2.2s cubic-bezier(.4, 0, .2, 1) infinite;
   }
 
-  .mark .part,
-  .mark .outer {
-    transform-box: view-box;
-    transform-origin: center;
+  /*
+    A lub-dub, not a fade.
+
+    Huxley beats at full strength, drops to half 180ms later, and goes
+    dark 360ms after that. Holding each value briefly makes the two
+    beats read as two beats rather than one long dimming -- the drop
+    between them is the thing your eye catches.
+
+    The centre cell of the heart stays dimmer throughout, as it does in
+    Huxley, so the shape has a focal point instead of reading as a
+    solid blob.
+  */
+  @keyframes beat {
+    0%, 6%   { opacity: 1; }
+    9%       { opacity: .45; }
+    13%, 20% { opacity: .5; }
+    26%, 100% { opacity: 0; }
   }
 
-  .mark .part.p1 { animation: drift  calc(3.8s / var(--speed, 1)) ease-in-out infinite; }
-  .mark .part.p2 { animation: drift2 calc(4.2s / var(--speed, 1)) ease-in-out infinite; }
-  .mark .part.p3 { animation: drift3 calc(3.3s / var(--speed, 1)) ease-in-out infinite; }
-  .mark .outer   { animation: breath calc(5s   / var(--speed, 1)) ease-in-out infinite; }
-
-  /* The library keeps a dark palette for every colourway. Swap to it
-     when the OS is dark, the same way the component does. */
-  @media (prefers-color-scheme: dark) {
-    .mark .part { fill: var(--dark-fill); }
+  @keyframes beat-mid {
+    0%, 6%   { opacity: .35; }
+    9%       { opacity: .16; }
+    13%, 20% { opacity: .175; }
+    26%, 100% { opacity: 0; }
   }
-
-__MOTION__
 
   /* ---------- the name ---------- */
 
@@ -330,7 +298,7 @@ __MOTION__
     letter-spacing: -0.022em;
     text-wrap: balance;
   }
-  h1 .tld { color: var(--accent); }
+  h1 .tld { color: var(--pink); }
 
   /* ---------- the standfirst ---------- */
 
@@ -339,12 +307,12 @@ __MOTION__
     max-width: 26rem;
     font-size: clamp(1rem, .95rem + .35vw, 1.125rem);
     line-height: 1.55;
-    color: var(--ink-soft);
+    color: var(--ink);
     text-wrap: balance;
   }
 
   a:focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--pink);
     outline-offset: 4px;
   }
 
@@ -358,7 +326,7 @@ __MOTION__
     padding: 1.5rem 1.5rem 2.25rem;
     font-family: var(--sans);
     font-size: .8125rem;
-    color: var(--ink-soft);
+    color: var(--ink);
   }
   footer a {
     color: inherit;
@@ -366,11 +334,11 @@ __MOTION__
     border-bottom: 1px solid transparent;
     transition: color 160ms ease, border-color 160ms ease;
   }
-  footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
-  footer .dot { color: var(--ink-soft); opacity: .5; }
+  footer a:hover { color: var(--pink); border-bottom-color: var(--pink); }
+  footer .dot { opacity: .45; }
 
   @media (prefers-reduced-motion: reduce) {
-    .mark .part, .mark .outer { animation: none; }
+    .mark i.heart { animation: none; opacity: 1; }
     * { transition: none !important; }
   }
 </style>
@@ -379,12 +347,8 @@ __MOTION__
 
 <main>
 
-  <div class="mark" role="img" aria-label="Last Known Design">
-    <svg viewBox="0 0 100 100" aria-hidden="true">
-      <g class="outer">
-          __PEBBLE__
-      </g>
-    </svg>
+  <div class="mark" role="img" aria-label="Huxley, a cellular canvas character with a beating heart">
+    __CELLS__
   </div>
 
   <h1>lastknown<span class="tld">.design</span></h1>
@@ -413,19 +377,23 @@ __MOTION__
 
 
 def build():
-    motion_css = "\n\n".join(
-        f"  @keyframes {name} {{ {body} }}" for name, body in MOTION.items()
-    )
     html = (
-        HTML.replace("__PEBBLE__", pebble_markup())
-        .replace("__MOTION__", motion_css)
+        HTML.replace("__CELLS__", mark_cells())
         .replace("__FAVICON__", favicon_uri())
+        .replace("__GROUND__", PALETTE["ground"])
+        .replace("__INK__", PALETTE["ink"])
+        .replace("__PINK__", PALETTE["pink"])
+        .replace("__PALE__", PALETTE["pale"])
+        .replace("__GROUND_D__", PALETTE_DARK["ground"])
+        .replace("__INK_D__", PALETTE_DARK["ink"])
+        .replace("__PINK_D__", PALETTE_DARK["pink"])
+        .replace("__PALE_D__", PALETTE_DARK["pale"])
     )
     (ROOT / "index.html").write_text(html, encoding="utf-8")
     print(f"wrote {ROOT / 'index.html'}")
-    print(f"  character : {CHARACTER}")
-    print(f"  palette   : {PALETTE} -> {COLORS}")
-    print(f"  parts     : {[tag for tag, _ in SHAPES]}")
+    print(f"  character : Huxley (24x24 cellular canvas)")
+    print(f"  heart     : {len(HEART)} cells, centre ({HEART_CX},{HEART_CY})")
+    print(f"  palette   : {PALETTE}")
 
 
 if __name__ == "__main__":

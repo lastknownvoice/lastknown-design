@@ -8,54 +8,52 @@ splash: the mark, the name, one door to the book, and a way to get in touch.
 | Path | What it is |
 |---|---|
 | `index.html` | The whole site — markup, CSS and copy in one file |
-| `scripts/build-markup.py` | Generates `index.html` from the Pebbles library |
-| `pebbles/` | Vendored Pebbles library — geometry (`data.js`) and motion (`styles.js`) |
+| `scripts/build-markup.py` | Generates `index.html` from the Huxley source |
+| `scripts/build-huxley-preview.py` | Builds the light/dark comparison sheet |
 | `design/` | Comparison sheets used to choose the mark |
 | `CNAME` | The custom domain (`lastknown.design`) |
 | `.github/workflows/deploy-site.yml` | Copies `index.html` to `_site/` and deploys via the official Pages actions |
 
 ## The mark
 
-**Arch**, from the [Pebbles](https://pebbles-showcase.vercel.app/) agent
-identity system — a rounded arch body, a tall rounded rect and a circle,
-each in its own colour, overlapping.
+**Huxley** — the 24×24 cellular canvas: X-shaped eyes, a flat mouth, and a
+heart at the chest that beats.
 
-Geometry, colours and motion are **read from the vendored library** at
-build time, not transcribed into the script. `scripts/build-markup.py`
-parses `pebbles/data.js` for the character's parts and palette, and
-`pebbles/styles.js` for the idle keyframes. If the library changes, the
-mark follows it.
+Shape and timing come from the Huxley source at `~/dev/huxley/huxley-24.js`.
+`scripts/build-markup.py` reads the heart's cell offsets out of it and
+lays out the eyes and mouth on the same grid, so the mark is the same
+character rather than a redraw.
 
 ```bash
 python3 scripts/build-markup.py
 ```
 
-The character is `Arch`, the colourway is the library's `accent`
-palette. Change `CHARACTER` or `PALETTE` at the top of the script to
-swap either.
+The character is drawn in SVG-in-CSS-grid, so the page stays one static
+file — no canvas, no runtime, no JavaScript.
 
-**Dark mode** uses the library's own `paletteDarkVariants` — the same
-way the component does it — via a `prefers-color-scheme` media query.
+**The beat** is a lub-dub, not a fade: full strength, a drop to half,
+a held plateau, then dark. The centre cell of the heart stays dimmer
+throughout (0.35 against 1.0), as it does in Huxley, so the shape keeps a
+focal point. The animation is disabled under `prefers-reduced-motion`.
 
-**Motion:** the three parts drift independently on a slow loop while the
-whole form breathes. The animation is disabled under
-`prefers-reduced-motion`.
+### The colourway
 
-### The Pebbles library
+Taken from *A to Z of The Designers Republic* (Thames & Hudson) — the
+orange ground, the near-black graphic, the hot pink accent and the pale
+peach. Sampled from the cover, not eyeballed.
 
-`pebbles/` holds `data.js` and `styles.js` from the Pebbles distribution
-zip, plus `USAGE.md` (the library's own developer guide). Only the two
-files the mark needs are vendored — the component, the morph and the
-precomputed contours are not used here.
+| Role | Light | Dark |
+|---|---|---|
+| ground | `#FFA918` | `#1B262E` |
+| ink | `#2F414D` | `#F2A919` |
+| pink | `#FD447E` | `#FF6E9C` |
+| pale | `#EFD8C9` | `#F5E3D8` |
 
-To refresh from a new distribution:
+Dark mode re-grounds the same four on ink rather than orange, so the
+mark keeps its contrast instead of glowing on a dark field.
 
-```bash
-curl -sL https://pebbles-showcase.vercel.app/dist/pebbles-assets.zip -o /tmp/pebbles.zip
-unzip -o /tmp/pebbles.zip -d /tmp/pebbles
-cp /tmp/pebbles/pebbles/data.js /tmp/pebbles/pebbles/styles.js pebbles/
-python3 scripts/build-markup.py
-```
+The favicon carries the **heart alone** — at 16px the whole character is
+mush, and the heart is the part that reads and the part that beats.
 
 ## Editing the copy
 
