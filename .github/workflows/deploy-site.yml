@@ -33,6 +33,15 @@ jobs:
           # have to ship with the page or the site falls back to the
           # system monospace.
           cp -r fonts _site/fonts
+          # The favicon, the touch icon, the robots file and the sitemap.
+          # A 404 on any of these is the sort of small roughness that
+          # makes a new domain look unfinished to a crawler or a
+          # corporate gateway, and the gateway in particular checks
+          # /favicon.ico without being asked to.
+          cp favicon.ico _site/favicon.ico
+          cp apple-touch-icon.png _site/apple-touch-icon.png
+          cp robots.txt _site/robots.txt
+          cp sitemap.xml _site/sitemap.xml
           # .nojekyll stops Pages running the output through Jekyll.
           touch _site/.nojekyll
           ls -la _site/

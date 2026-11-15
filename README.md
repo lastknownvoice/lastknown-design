@@ -8,13 +8,17 @@ splash: the mark, the name, one door to the book, and a way to get in touch.
 | Path | What it is |
 |---|---|
 | `index.html` | The whole site — markup, CSS and copy in one file |
-| `scripts/build-markup.py` | Generates `index.html` from the Huxley source |
+| `scripts/build-markup.py` | Generates `index.html`, the favicons, `robots.txt` and `sitemap.xml` from the Huxley source |
+| `scripts/raster.py` | Minimal PNG/ICO writers — standard library only, no third-party imaging dependency |
 | `scripts/build-huxley-preview.py` | Builds the light/dark comparison sheet |
 | `scripts/fetch-fonts.py` | Refetches the self-hosted font files (only needed when the family changes) |
 | `fonts/` | IBM Plex Mono woff2 subsets + the OFL licence |
 | `design/` | Comparison sheets used to choose the mark |
+| `favicon.ico` | The heart as a real multi-size icon (16→256px) |
+| `apple-touch-icon.png` | The heart, opaque, for iOS |
+| `robots.txt` / `sitemap.xml` | Generated from `CNAME`, so they can't drift from DNS |
 | `CNAME` | The custom domain (`lastknown.design`) |
-| `.github/workflows/deploy-site.yml` | Copies `index.html` and `fonts/` to `_site/` and deploys via the official Pages actions |
+| `.github/workflows/deploy-site.yml` | Copies the page, fonts and static files to `_site/` and deploys via the official Pages actions |
 
 ## The mark
 
@@ -82,6 +86,32 @@ mark keeps its contrast instead of glowing on a dark field.
 
 The heart carries the **pink** — it is the only element on the page, so it
 is the one that has to read. The favicon is the same heart, still.
+
+### The favicon and the site's small files
+
+The favicon is the **same heart, rasterised** — the ICO is generated from
+the same `heart_cells()` lattice as the inline SVG, so the two cannot
+drift apart. It ships at 16, 32, 48, 64, 128 and 256px.
+
+`scripts/raster.py` is a small PNG and ICO writer built on `zlib` and
+`struct` — no third-party imaging library, because the site has no
+third-party build dependencies. Coverage is computed analytically per
+pixel rather than by sampling, so the edges are clean and the build is
+deterministic.
+
+Two details worth keeping:
+
+- **The touch icon is opaque.** iOS composites a transparent icon over
+  whatever is behind it and never masks it, so a transparent heart
+  disappears into a white background. The ground colour is baked in.
+- **`robots.txt` and `sitemap.xml` are generated from `CNAME`.** DNS is
+  the one source of truth for where the site lives; reading it means the
+  sitemap, the robots file and the canonical link cannot drift away from
+  where the site actually is.
+
+A 404 on any of these is the sort of small roughness that makes a new
+domain look unfinished to a crawler or a corporate gateway — and the
+gateway in particular checks `/favicon.ico` without being asked to.
 
 ## Editing the copy
 

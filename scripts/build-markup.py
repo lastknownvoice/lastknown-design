@@ -32,6 +32,8 @@ import math
 import pathlib
 import re
 
+import raster
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 HUXLEY = pathlib.Path("/Users/ianroberts/dev/huxley/huxley-24.js")
 
@@ -241,6 +243,104 @@ def favicon_uri():
     )
 
 
+# The raster favicon. The sizes below are the ones browsers actually ask
+# for; anything bigger is wasted bytes.
+ICO_SIZES = [16, 32, 48, 64, 128, 256]
+APPLE_TOUCH_SIZE = 180
+
+
+# --------------------------------------------------------------------------
+# The site's own address, read from CNAME rather than written out again
+# --------------------------------------------------------------------------
+
+def site_domain():
+    """The canonical domain, read from the CNAME file.
+
+    DNS is the one source of truth for where this site lives, and the
+    CNAME file is what GitHub Pages uses to set it. Reading it means the
+    sitemap, the robots file and the canonical link cannot drift away
+    from where the site actually is.
+    """
+    cname = ROOT / "CNAME"
+    if not cname.exists():
+        raise SystemExit("missing CNAME -- cannot work out the site's domain")
+    domain = cname.read_text(encoding="utf-8").strip()
+    if not domain or "/" in domain or " " in domain:
+        raise SystemExit(f"CNAME does not look like a hostname: {domain!r}")
+    return domain
+
+
+def robots_txt(domain):
+    """The site's robots file.
+
+    The site is one page and is meant to be found, so everything is
+    allowed -- but the file has to exist. A 404 on /robots.txt is one of
+    the small signals that makes a new domain look unfinished to
+    automated crawlers and corporate gateways.
+    """
+    return (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "\n"
+        f"Sitemap: https://{domain}/sitemap.xml\n"
+    )
+
+
+def sitemap_xml(domain):
+    """The sitemap. One page, because there is one page."""
+    today = "2026-11-15"
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        "  <url>\n"
+        f"    <loc>https://{domain}/</loc>\n"
+        f"    <lastmod>{today}</lastmod>\n"
+        "    <changefreq>monthly</changefreq>\n"
+        "    <priority>1.0</priority>\n"
+        "  </url>\n"
+        "</urlset>\n"
+    )
+
+
+def favicon_ico():
+    """The heart as a real /favicon.ico.
+
+    A 404 on /favicon.ico is one of the small things that makes a
+    brand-new domain look rougher to proxies and automated filters than
+    it needs to be, and it is the one path on the site a corporate
+    gateway reliably checks for.
+
+    Rasterised from the same `heart_cells()` lattice as the SVG, so the
+    two are the same mark at different fidelities rather than two
+    drawings that can drift apart.
+    """
+    cells = set(heart_cells())
+    pink = raster.hex_rgb(PALETTE["pink"])
+    images = []
+    for size in ICO_SIZES:
+        rgba = raster.raster_grid(cells, GRID, size, pink)
+        images.append((size, raster.encode_png(size, rgba)))
+    return raster.encode_ico(images)
+
+
+def apple_touch_icon():
+    """The heart as an opaque 180x180 PNG.
+
+    iOS composites a touch icon over whatever is behind it and never
+    masks it, so a transparent heart disappears into a white background.
+    The ground colour is baked in.
+    """
+    cells = set(heart_cells())
+    rgba = raster.raster_grid(
+        cells,
+        GRID,
+        APPLE_TOUCH_SIZE,
+        raster.hex_rgb(PALETTE["pink"]),
+        background=raster.hex_rgb(PALETTE["ground"]),
+    )
+    return raster.encode_png(APPLE_TOUCH_SIZE, rgba)
+
+
 HTML = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -253,8 +353,16 @@ HTML = """<!DOCTYPE html>
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#FFA918" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1B262E" media="(prefers-color-scheme: dark)">
-<link rel="canonical" href="https://lastknown.design/">
+<link rel="canonical" href="__CANONICAL__">
+<!--
+  Three favicons, in the order browsers prefer them: the inline SVG for
+  modern ones, a real /favicon.ico for the ones that only ever ask for
+  that path, and an opaque touch icon for iOS, which composites a
+  transparent icon over white and loses the mark.
+-->
+<link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="__FAVICON__">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
 <style>
 __FONT_FACES__
@@ -496,6 +604,8 @@ def build():
     if "--d:" in mark_cells() and "ms" not in mark_cells():
         raise SystemExit("wave delay is missing its unit -- the wave would collapse")
 
+    domain = site_domain()
+
     html = (
         HTML.replace("__CELLS__", mark_cells())
         .replace("__CYCLE__", CYCLE)
@@ -509,8 +619,17 @@ def build():
         .replace("__INK_D__", PALETTE_DARK["ink"])
         .replace("__PINK_D__", PALETTE_DARK["pink"])
         .replace("__PALE_D__", PALETTE_DARK["pale"])
+        .replace("__CANONICAL__", f"https://{domain}/")
     )
     (ROOT / "index.html").write_text(html, encoding="utf-8")
+
+    # The static files that have to exist for the site to look finished
+    # to a crawler or a corporate gateway.
+    (ROOT / "favicon.ico").write_bytes(favicon_ico())
+    (ROOT / "apple-touch-icon.png").write_bytes(apple_touch_icon())
+    (ROOT / "robots.txt").write_text(robots_txt(domain), encoding="utf-8")
+    (ROOT / "sitemap.xml").write_text(sitemap_xml(domain), encoding="utf-8")
+
     print(f"wrote {ROOT / 'index.html'}")
     print(f"  character : Huxley — the heart alone")
     print(f"  grid      : {GRID}x{GRID}")
@@ -518,6 +637,8 @@ def build():
     print(f"  wave      : {len(RINGS)} rings, {WAVE_STEP_MS}ms per ring, {CYCLE} cycle")
     print(f"  base      : {BASE_OPACITY} (heart rests lit, never off)")
     print(f"  palette   : {PALETTE}")
+    print(f"  domain    : {domain} (from CNAME)")
+    print("wrote favicon.ico, apple-touch-icon.png, robots.txt, sitemap.xml")
 
 
 if __name__ == "__main__":
