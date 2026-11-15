@@ -72,12 +72,10 @@ HTML = f"""<!DOCTYPE html>
   }}
 
   .mark {{
-    display: grid; grid-template-columns: repeat(24, 6px);
-    grid-auto-rows: 6px; gap: 2px; margin: 0; padding: 0; list-style: none;
+    display: grid; grid-template-columns: repeat(5, 14px);
+    grid-auto-rows: 14px; gap: 4px; margin: 0; padding: 0; list-style: none;
   }}
   .mark i {{ display:block; border-radius: 1px; }}
-  .panel.light .mark i.eye, .panel.light .mark i.mouth {{ background: {bm.PALETTE['ink']}; }}
-  .panel.dark  .mark i.eye, .panel.dark  .mark i.mouth {{ background: {bm.PALETTE_DARK['ink']}; }}
   .panel.light .mark i.heart {{ background: {bm.PALETTE['pink']}; animation: var(--beat, beat) 2.2s cubic-bezier(.4,0,.2,1) infinite; }}
   .panel.dark  .mark i.heart {{ background: {bm.PALETTE_DARK['pink']}; animation: var(--beat, beat) 2.2s cubic-bezier(.4,0,.2,1) infinite; }}
 

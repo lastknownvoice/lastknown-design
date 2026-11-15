@@ -16,23 +16,26 @@ splash: the mark, the name, one door to the book, and a way to get in touch.
 
 ## The mark
 
-**Huxley** — the 24×24 cellular canvas: X-shaped eyes, a flat mouth, and a
-heart at the chest that beats.
+**A beating heart** — Huxley's heart, and only Huxley's heart.
+
+Huxley puts the heart at the chest of a 24×24 cellular canvas, below the
+eyes and the mouth. The mark is the heart alone: the face comes off, and
+the grid closes in to the heart's own 5×5 footprint. The cells get
+proportionally bigger to hold the mark's presence on the page.
 
 Shape and timing come from the Huxley source at `~/dev/huxley/huxley-24.js`.
-`scripts/build-markup.py` reads the heart's cell offsets out of it and
-lays out the eyes and mouth on the same grid, so the mark is the same
-character rather than a redraw.
+`scripts/build-markup.py` reads the heart's cell offsets out of it, so the
+mark is the same character rather than a redraw.
 
 ```bash
 python3 scripts/build-markup.py
 ```
 
-The character is drawn in SVG-in-CSS-grid, so the page stays one static
-file — no canvas, no runtime, no JavaScript.
+The character is drawn in CSS grid, so the page stays one static file —
+no canvas, no runtime, no JavaScript.
 
-**The beat** is a lub-dub, not a fade: full strength, a drop to half,
-a held plateau, then dark. The centre cell of the heart stays dimmer
+**The beat** is a lub-dub, not a fade: full strength, a drop to half, a
+held plateau, then dark. The centre cell of the heart stays dimmer
 throughout (0.35 against 1.0), as it does in Huxley, so the shape keeps a
 focal point. The animation is disabled under `prefers-reduced-motion`.
 
@@ -52,8 +55,8 @@ peach. Sampled from the cover, not eyeballed.
 Dark mode re-grounds the same four on ink rather than orange, so the
 mark keeps its contrast instead of glowing on a dark field.
 
-The favicon carries the **heart alone** — at 16px the whole character is
-mush, and the heart is the part that reads and the part that beats.
+The heart carries the **pink** — it is the only element on the page, so it
+is the one that has to read. The favicon is the same heart, still.
 
 ## Editing the copy
 

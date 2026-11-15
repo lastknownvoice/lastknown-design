@@ -27,12 +27,10 @@
   }
 
   .mark {
-    display: grid; grid-template-columns: repeat(24, 6px);
-    grid-auto-rows: 6px; gap: 2px; margin: 0; padding: 0; list-style: none;
+    display: grid; grid-template-columns: repeat(5, 14px);
+    grid-auto-rows: 14px; gap: 4px; margin: 0; padding: 0; list-style: none;
   }
   .mark i { display:block; border-radius: 1px; }
-  .panel.light .mark i.eye, .panel.light .mark i.mouth { background: #2F414D; }
-  .panel.dark  .mark i.eye, .panel.dark  .mark i.mouth { background: #F2A919; }
   .panel.light .mark i.heart { background: #FD447E; animation: var(--beat, beat) 2.2s cubic-bezier(.4,0,.2,1) infinite; }
   .panel.dark  .mark i.heart { background: #FF6E9C; animation: var(--beat, beat) 2.2s cubic-bezier(.4,0,.2,1) infinite; }
 
@@ -78,60 +76,22 @@
   <section class="panel light">
     <div class="mark-wrap">
       <div class="mark" role="img" aria-label="Huxley">
-        <i class="c eye" style="grid-area:7/6;--o:1.0"></i>
-        <i class="c eye" style="grid-area:7/10;--o:1.0"></i>
-        <i class="c eye" style="grid-area:8/7;--o:1.0"></i>
-        <i class="c eye" style="grid-area:8/9;--o:1.0"></i>
-        <i class="c eye" style="grid-area:9/8;--o:0.22"></i>
-        <i class="c eye" style="grid-area:10/7;--o:1.0"></i>
-        <i class="c eye" style="grid-area:10/9;--o:1.0"></i>
-        <i class="c eye" style="grid-area:11/6;--o:1.0"></i>
-        <i class="c eye" style="grid-area:11/10;--o:1.0"></i>
-        <i class="c eye" style="grid-area:7/15;--o:1.0"></i>
-        <i class="c eye" style="grid-area:7/19;--o:1.0"></i>
-        <i class="c eye" style="grid-area:8/16;--o:1.0"></i>
-        <i class="c eye" style="grid-area:8/18;--o:1.0"></i>
-        <i class="c eye" style="grid-area:9/17;--o:0.22"></i>
-        <i class="c eye" style="grid-area:10/16;--o:1.0"></i>
-        <i class="c eye" style="grid-area:10/18;--o:1.0"></i>
-        <i class="c eye" style="grid-area:11/15;--o:1.0"></i>
-        <i class="c eye" style="grid-area:11/19;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/8;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/9;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/10;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/11;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/12;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/13;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/14;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/15;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/16;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/17;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/8;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/9;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/10;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/11;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/12;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/13;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/14;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/15;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/16;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/17;--o:1.0"></i>
-        <i class="c heart" style="grid-area:18/12;--o:1.0"></i>
-        <i class="c heart" style="grid-area:18/14;--o:1.0"></i>
-        <i class="c heart" style="grid-area:19/11;--o:1.0"></i>
-        <i class="c heart" style="grid-area:19/12;--o:1.0"></i>
-        <i class="c heart" style="grid-area:19/13;--o:1.0"></i>
-        <i class="c heart" style="grid-area:19/14;--o:1.0"></i>
-        <i class="c heart" style="grid-area:19/15;--o:1.0"></i>
-        <i class="c heart" style="grid-area:20/11;--o:1.0"></i>
-        <i class="c heart" style="grid-area:20/12;--o:1.0"></i>
-        <i class="c heart" style="grid-area:20/13;--o:1.0;--beat: beat-mid"></i>
-        <i class="c heart" style="grid-area:20/14;--o:1.0"></i>
-        <i class="c heart" style="grid-area:20/15;--o:1.0"></i>
-        <i class="c heart" style="grid-area:21/12;--o:1.0"></i>
-        <i class="c heart" style="grid-area:21/13;--o:1.0"></i>
-        <i class="c heart" style="grid-area:21/14;--o:1.0"></i>
-        <i class="c heart" style="grid-area:22/13;--o:1.0"></i>
+        <i class="c heart" style="grid-area:1/2;--o:1.0"></i>
+        <i class="c heart" style="grid-area:1/4;--o:1.0"></i>
+        <i class="c heart" style="grid-area:2/1;--o:1.0"></i>
+        <i class="c heart" style="grid-area:2/2;--o:1.0"></i>
+        <i class="c heart" style="grid-area:2/3;--o:1.0"></i>
+        <i class="c heart" style="grid-area:2/4;--o:1.0"></i>
+        <i class="c heart" style="grid-area:2/5;--o:1.0"></i>
+        <i class="c heart" style="grid-area:3/1;--o:1.0"></i>
+        <i class="c heart" style="grid-area:3/2;--o:1.0"></i>
+        <i class="c heart" style="grid-area:3/3;--o:1.0;--beat: beat-mid"></i>
+        <i class="c heart" style="grid-area:3/4;--o:1.0"></i>
+        <i class="c heart" style="grid-area:3/5;--o:1.0"></i>
+        <i class="c heart" style="grid-area:4/2;--o:1.0"></i>
+        <i class="c heart" style="grid-area:4/3;--o:1.0"></i>
+        <i class="c heart" style="grid-area:4/4;--o:1.0"></i>
+        <i class="c heart" style="grid-area:5/3;--o:1.0"></i>
       </div>
       <h1>lastknown<span class="tld">.design</span></h1>
       <p class="standfirst">A practice and a body of work on how AI agents should behave.</p>
@@ -148,60 +108,22 @@
   <section class="panel dark">
     <div class="mark-wrap">
       <div class="mark" role="img" aria-label="Huxley">
-        <i class="c eye" style="grid-area:7/6;--o:1.0"></i>
-        <i class="c eye" style="grid-area:7/10;--o:1.0"></i>
-        <i class="c eye" style="grid-area:8/7;--o:1.0"></i>
-        <i class="c eye" style="grid-area:8/9;--o:1.0"></i>
-        <i class="c eye" style="grid-area:9/8;--o:0.22"></i>
-        <i class="c eye" style="grid-area:10/7;--o:1.0"></i>
-        <i class="c eye" style="grid-area:10/9;--o:1.0"></i>
-        <i class="c eye" style="grid-area:11/6;--o:1.0"></i>
-        <i class="c eye" style="grid-area:11/10;--o:1.0"></i>
-        <i class="c eye" style="grid-area:7/15;--o:1.0"></i>
-        <i class="c eye" style="grid-area:7/19;--o:1.0"></i>
-        <i class="c eye" style="grid-area:8/16;--o:1.0"></i>
-        <i class="c eye" style="grid-area:8/18;--o:1.0"></i>
-        <i class="c eye" style="grid-area:9/17;--o:0.22"></i>
-        <i class="c eye" style="grid-area:10/16;--o:1.0"></i>
-        <i class="c eye" style="grid-area:10/18;--o:1.0"></i>
-        <i class="c eye" style="grid-area:11/15;--o:1.0"></i>
-        <i class="c eye" style="grid-area:11/19;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/8;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/9;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/10;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/11;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/12;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/13;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/14;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/15;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/16;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:15/17;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/8;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/9;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/10;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/11;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/12;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/13;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/14;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/15;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/16;--o:1.0"></i>
-        <i class="c mouth" style="grid-area:16/17;--o:1.0"></i>
-        <i class="c heart" style="grid-area:18/12;--o:1.0"></i>
-        <i class="c heart" style="grid-area:18/14;--o:1.0"></i>
-        <i class="c heart" style="grid-area:19/11;--o:1.0"></i>
-        <i class="c heart" style="grid-area:19/12;--o:1.0"></i>
-        <i class="c heart" style="grid-area:19/13;--o:1.0"></i>
-        <i class="c heart" style="grid-area:19/14;--o:1.0"></i>
-        <i class="c heart" style="grid-area:19/15;--o:1.0"></i>
-        <i class="c heart" style="grid-area:20/11;--o:1.0"></i>
-        <i class="c heart" style="grid-area:20/12;--o:1.0"></i>
-        <i class="c heart" style="grid-area:20/13;--o:1.0;--beat: beat-mid"></i>
-        <i class="c heart" style="grid-area:20/14;--o:1.0"></i>
-        <i class="c heart" style="grid-area:20/15;--o:1.0"></i>
-        <i class="c heart" style="grid-area:21/12;--o:1.0"></i>
-        <i class="c heart" style="grid-area:21/13;--o:1.0"></i>
-        <i class="c heart" style="grid-area:21/14;--o:1.0"></i>
-        <i class="c heart" style="grid-area:22/13;--o:1.0"></i>
+        <i class="c heart" style="grid-area:1/2;--o:1.0"></i>
+        <i class="c heart" style="grid-area:1/4;--o:1.0"></i>
+        <i class="c heart" style="grid-area:2/1;--o:1.0"></i>
+        <i class="c heart" style="grid-area:2/2;--o:1.0"></i>
+        <i class="c heart" style="grid-area:2/3;--o:1.0"></i>
+        <i class="c heart" style="grid-area:2/4;--o:1.0"></i>
+        <i class="c heart" style="grid-area:2/5;--o:1.0"></i>
+        <i class="c heart" style="grid-area:3/1;--o:1.0"></i>
+        <i class="c heart" style="grid-area:3/2;--o:1.0"></i>
+        <i class="c heart" style="grid-area:3/3;--o:1.0;--beat: beat-mid"></i>
+        <i class="c heart" style="grid-area:3/4;--o:1.0"></i>
+        <i class="c heart" style="grid-area:3/5;--o:1.0"></i>
+        <i class="c heart" style="grid-area:4/2;--o:1.0"></i>
+        <i class="c heart" style="grid-area:4/3;--o:1.0"></i>
+        <i class="c heart" style="grid-area:4/4;--o:1.0"></i>
+        <i class="c heart" style="grid-area:5/3;--o:1.0"></i>
       </div>
       <h1>lastknown<span class="tld">.design</span></h1>
       <p class="standfirst">A practice and a body of work on how AI agents should behave.</p>

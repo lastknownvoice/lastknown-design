@@ -66,40 +66,18 @@ def load_heart():
 
 HEART = load_heart()
 
-# The heart sits at the chest on a 24x24 grid.
-GRID = 24
-HEART_CX = 12
-HEART_CY = 19
-
-# Eyes: 5x5 X shapes, centred at (7, 8) and (16, 8).
-EYE_SIZE = 5
-EYE_L = (7, 8)
-EYE_R = (16, 8)
-
-# Mouth: a 2-row neutral line, cols 7..16, rows 14..15.
-MOUTH_COLS = range(7, 17)
-MOUTH_ROWS = (14, 15)
+# Huxley puts the heart at the chest of a 24x24 grid. The mark is the
+# heart alone, so the grid closes in around it: the heart's own 5x5
+# footprint becomes the canvas, and the cells get bigger to keep the
+# mark's presence on the page.
+GRID = 5
+HEART_CX = 2
+HEART_CY = 2
 
 
 def heart_cells():
-    """The heart as (col, row) pairs on the 24x24 grid."""
+    """The heart as (col, row) pairs on the 5x5 grid."""
     return [(HEART_CX + lx, HEART_CY + ly) for lx, ly in HEART]
-
-
-def eye_cells(cx, cy):
-    """A 5x5 X: the two diagonals, with the centre dimmed."""
-    half = EYE_SIZE // 2
-    cells = []
-    for dy in range(-half, half + 1):
-        for dx in range(-half, half + 1):
-            if abs(dx) == abs(dy):
-                cells.append((cx + dx, cy + dy, 0.22 if (dx == 0 and dy == 0) else 1.0))
-    return cells
-
-
-def mouth_cells():
-    """A 2-row flat mouth, cols 7..16."""
-    return [(x, y, 1.0) for y in MOUTH_ROWS for x in MOUTH_COLS]
 
 
 # --------------------------------------------------------------------------
@@ -118,12 +96,8 @@ def cell(col, row, cls, opacity=1.0, extra=""):
 
 
 def mark_cells():
-    """Every lit cell of the character, with its class."""
+    """The heart alone, with its dimmer centre cell."""
     out = []
-    for col, row, opacity in eye_cells(*EYE_L) + eye_cells(*EYE_R):
-        out.append(cell(col, row, "eye", opacity))
-    for col, row, opacity in mouth_cells():
-        out.append(cell(col, row, "mouth", opacity))
     for col, row in heart_cells():
         # The centre cell of the heart is the focal point and stays
         # dimmer, as it does in Huxley.
@@ -137,15 +111,15 @@ def mark_cells():
 def favicon_markup():
     """A still heart for the favicon — the mark's focal point.
 
-    At 16px the whole 24x24 character is mush, so the favicon carries
-    the heart alone: it is the part that reads at small sizes and the
-    part that carries the beat.
+    At 16px the heart is the only thing that reads, and it is the part
+    that carries the beat.
     """
     cells = []
     for col, row in heart_cells():
-        x = (col - HEART_CX) * 4 + 32
-        y = (row - HEART_CY) * 4 + 32
-        cells.append(f'<rect x="{x}" y="{y}" width="4" height="4" fill="{PALETTE["pink"]}"/>')
+        # A 64x64 box with a 5x5 grid of 10px cells plus 2px gutters.
+        x = col * 12 + 2
+        y = row * 12 + 2
+        cells.append(f'<rect x="{x}" y="{y}" width="10" height="10" fill="{PALETTE["pink"]}"/>')
     return (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
         + "".join(cells)
@@ -183,8 +157,8 @@ HTML = """<!DOCTYPE html>
     --pink:    __PINK__;
     --pale:    __PALE__;
 
-    --cell:    clamp(4px, 1.1vw, 6px);
-    --gap:     clamp(1.5px, .42vw, 2.5px);
+    --cell:    clamp(11px, 3.2vw, 17px);
+    --gap:     clamp(3px, .9vw, 5px);
 
     --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
     --sans:  ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
@@ -229,16 +203,16 @@ HTML = """<!DOCTYPE html>
   /* ---------- the mark ---------- */
 
   /*
-    Huxley, the 24x24 cellular canvas: X-shaped eyes, a neutral mouth,
-    and a heart at the chest that beats.
+    Huxley puts the heart at the chest of a 24x24 grid, below the eyes
+    and the mouth. The mark is the heart alone -- the face comes off,
+    and the grid closes in to the heart's own 5x5 footprint.
 
-    The shape and the lub-dub timing come from the Huxley source. The
-    colourway comes from A to Z of The Designers Republic.
+    The colourway comes from A to Z of The Designers Republic.
   */
 
   .mark {
     display: grid;
-    grid-template-columns: repeat(24, var(--cell));
+    grid-template-columns: repeat(5, var(--cell));
     grid-auto-rows: var(--cell);
     gap: var(--gap);
     margin: 0;
@@ -252,9 +226,6 @@ HTML = """<!DOCTYPE html>
     border-radius: 1px;
     opacity: var(--o);
   }
-
-  .mark i.eye   { background: var(--ink); }
-  .mark i.mouth { background: var(--ink); }
 
   /* The heart is the life signal, and it carries the pink. */
   .mark i.heart {
@@ -347,7 +318,7 @@ HTML = """<!DOCTYPE html>
 
 <main>
 
-  <div class="mark" role="img" aria-label="Huxley, a cellular canvas character with a beating heart">
+  <div class="mark" role="img" aria-label="A beating heart">
     __CELLS__
   </div>
 
@@ -391,7 +362,8 @@ def build():
     )
     (ROOT / "index.html").write_text(html, encoding="utf-8")
     print(f"wrote {ROOT / 'index.html'}")
-    print(f"  character : Huxley (24x24 cellular canvas)")
+    print(f"  character : Huxley — the heart alone")
+    print(f"  grid      : {GRID}x{GRID}")
     print(f"  heart     : {len(HEART)} cells, centre ({HEART_CX},{HEART_CY})")
     print(f"  palette   : {PALETTE}")
 
