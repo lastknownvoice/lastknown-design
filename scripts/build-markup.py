@@ -11,19 +11,24 @@ a pale peach for text.
 Geometry and motion are lifted from the Huxley source so the mark is the
 same character, not a redraw:
 
-  - shape     -> dev/huxley/huxley-24.js (eyes, mouth, heart)
+  - shape     -> dev/huxley/huxley-24.js (the heart's cell offsets)
   - timing    -> dev/huxley/huxley-24.js (the lub-dub heartbeat)
   - palette   -> sampled from the Designers Republic cover
 
-The character is drawn in SVG, so the page stays a single static file
-with no canvas and no runtime. The heartbeat is CSS keyframes matching
-the lub-dub shape: a hard full-strength beat, a half-strength beat 180ms
-later, then dark.
+The mark is drawn in CSS grid, so the page stays a single static file
+with no canvas and no runtime.
+
+The heartbeat is not a blink. Each cell animates its own opacity on a
+delay set by its distance from the heart's centre, so the pulse travels
+outward through the shape as a ripple -- the heart reads as alive rather
+than as a shape that switches on and off. Huxley's lub-dub survives as
+the envelope: a full crest, a dimmer second crest, then rest.
 
 Run:  python3 scripts/build-markup.py
 Out:  index.html
 """
 
+import math
 import pathlib
 import re
 
@@ -74,6 +79,31 @@ GRID = 5
 HEART_CX = 2
 HEART_CY = 2
 
+# The wave: a ripple travelling out from the heart's centre.
+#
+# Delay is set per cell by its radius from the centre, so the pulse
+# crosses the shape as a moving ring instead of the whole heart
+# flashing at once. Cells are grouped into rings by radius and each
+# ring is one step further out than the last, so the wave reads as
+# discrete rings travelling rather than a uniform blur.
+#
+# The heart's centre cell is the origin, and it stays dimmer at the
+# crest -- as it does in Huxley -- so the ripple has a soft core and
+# the shape keeps a focal point.
+WAVE_STEP_MS = 35
+CYCLE = "2.2s"
+BASE_OPACITY = 0.16
+CENTER_PEAK = 0.45
+
+
+def wave_rings():
+    """The heart's distinct radii from the centre, ranked outward."""
+    radii = sorted({round(math.hypot(lx, ly), 4) for lx, ly in HEART})
+    return {radius: rank for rank, radius in enumerate(radii)}
+
+
+RINGS = wave_rings()
+
 
 def heart_cells():
     """The heart as (col, row) pairs on the 5x5 grid."""
@@ -84,26 +114,39 @@ def heart_cells():
 # Markup
 # --------------------------------------------------------------------------
 
-def cell(col, row, cls, opacity=1.0, extra=""):
+def cell(col, row, cls, extra=""):
     """One grid cell as a div, positioned with the CSS grid."""
     # `extra` is appended as further declarations, so it needs its own
     # leading semicolon.
     suffix = f";{extra}" if extra else ""
     return (
         f'<i class="c {cls}" style="grid-area:{row + 1}/{col + 1};'
-        f'--o:{opacity}{suffix}"></i>'
+        f'{suffix.lstrip(";")}"></i>'
     )
 
 
 def mark_cells():
-    """The heart alone, with its dimmer centre cell."""
+    """The heart alone, each cell carrying its place in the wave."""
     out = []
-    for col, row in heart_cells():
+    for (lx, ly), (col, row) in zip(HEART, heart_cells()):
         # The centre cell of the heart is the focal point and stays
         # dimmer, as it does in Huxley.
-        is_center = (col == HEART_CX and row == HEART_CY)
+        is_center = (lx == 0 and ly == 0)
+        peak = CENTER_PEAK if is_center else 1.0
+        # The delay has to carry its unit -- a bare number is not a valid
+        # <time>, and `animation-delay` would silently fall back to 0s,
+        # which collapses the whole wave into a single blink.
+        delay = RINGS[round(math.hypot(lx, ly), 4)] * WAVE_STEP_MS
         out.append(
-            cell(col, row, "heart", extra="--beat: beat-mid" if is_center else "")
+            cell(
+                col,
+                row,
+                "heart",
+                extra=(
+                    f"--d:{delay}ms;--peak:{peak};"
+                    f"--half:{peak * 0.5};--base:{BASE_OPACITY}"
+                ),
+            )
         )
     return "\n        ".join(out)
 
@@ -164,6 +207,8 @@ HTML = """<!DOCTYPE html>
     --sans:  ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
   }
 
+  /* MARK-ROOT-END */
+
   @media (prefers-color-scheme: dark) {
     :root {
       --ground: __GROUND_D__;
@@ -202,6 +247,8 @@ HTML = """<!DOCTYPE html>
 
   /* ---------- the mark ---------- */
 
+  /* MARK-CSS-START — the preview lifts this block so it cannot drift */
+
   /*
     Huxley puts the heart at the chest of a 24x24 grid, below the eyes
     and the mouth. The mark is the heart alone -- the face comes off,
@@ -224,40 +271,52 @@ HTML = """<!DOCTYPE html>
     display: block;
     background: var(--ink);
     border-radius: 1px;
-    opacity: var(--o);
-  }
-
-  /* The heart is the life signal, and it carries the pink. */
-  .mark i.heart {
-    background: var(--pink);
-    animation: var(--beat, beat) 2.2s cubic-bezier(.4, 0, .2, 1) infinite;
+    opacity: var(--base);
   }
 
   /*
-    A lub-dub, not a fade.
+    The heart is the life signal, and it carries the pink.
+
+    The beat is a ripple, not a blink. Every cell runs the same
+    keyframes but starts at its own moment -- the delay is set by the
+    cell's distance from the heart's centre -- so the pulse travels
+    outward through the shape. The heart reads as alive, breathing
+    from the middle out, rather than as a shape switching on and off.
+  */
+  .mark i.heart {
+    background: var(--pink);
+    animation: wave __CYCLE__ cubic-bezier(.4, 0, .2, 1) infinite;
+    animation-delay: var(--d);
+  }
+
+  /*
+    A lub-dub, travelling.
 
     Huxley beats at full strength, drops to half 180ms later, and goes
     dark 360ms after that. Holding each value briefly makes the two
     beats read as two beats rather than one long dimming -- the drop
     between them is the thing your eye catches.
 
+    Huxley's pace is 2200ms, and the crest window closes at 360ms. The
+    keyframes below keep that shape: a full crest, a dimmer second
+    crest, then rest at the base level.
+
     The centre cell of the heart stays dimmer throughout, as it does in
-    Huxley, so the shape has a focal point instead of reading as a
-    solid blob.
+    Huxley, so the ripple has a soft core and the shape keeps a focal
+    point instead of reading as a solid blob.
+
+    The base level is not zero. The heart never fully vanishes -- it
+    rests at a low glow and rises out of it. That is what keeps it
+    looking alive between beats.
   */
-  @keyframes beat {
-    0%, 6%   { opacity: 1; }
-    9%       { opacity: .45; }
-    13%, 20% { opacity: .5; }
-    26%, 100% { opacity: 0; }
+  @keyframes wave {
+    0%        { opacity: var(--peak); }
+    4%        { opacity: var(--half); }
+    9%, 13%   { opacity: var(--half); }
+    17%, 100% { opacity: var(--base); }
   }
 
-  @keyframes beat-mid {
-    0%, 6%   { opacity: .35; }
-    9%       { opacity: .16; }
-    13%, 20% { opacity: .175; }
-    26%, 100% { opacity: 0; }
-  }
+  /* MARK-CSS-END */
 
   /* ---------- the name ---------- */
 
@@ -309,7 +368,7 @@ HTML = """<!DOCTYPE html>
   footer .dot { opacity: .45; }
 
   @media (prefers-reduced-motion: reduce) {
-    .mark i.heart { animation: none; opacity: 1; }
+    .mark i.heart { animation: none; opacity: var(--peak); }
     * { transition: none !important; }
   }
 </style>
@@ -348,8 +407,15 @@ HTML = """<!DOCTYPE html>
 
 
 def build():
+    # Guard: a unitless animation-delay silently resolves to 0s and
+    # collapses the wave back into a single blink. Catch it here rather
+    # than discovering it in the browser.
+    if "--d:" in mark_cells() and "ms" not in mark_cells():
+        raise SystemExit("wave delay is missing its unit -- the wave would collapse")
+
     html = (
         HTML.replace("__CELLS__", mark_cells())
+        .replace("__CYCLE__", CYCLE)
         .replace("__FAVICON__", favicon_uri())
         .replace("__GROUND__", PALETTE["ground"])
         .replace("__INK__", PALETTE["ink"])
@@ -365,6 +431,8 @@ def build():
     print(f"  character : Huxley — the heart alone")
     print(f"  grid      : {GRID}x{GRID}")
     print(f"  heart     : {len(HEART)} cells, centre ({HEART_CX},{HEART_CY})")
+    print(f"  wave      : {len(RINGS)} rings, {WAVE_STEP_MS}ms per ring, {CYCLE} cycle")
+    print(f"  base      : {BASE_OPACITY} (heart rests lit, never off)")
     print(f"  palette   : {PALETTE}")
 
 

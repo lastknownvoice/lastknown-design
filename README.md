@@ -34,10 +34,33 @@ python3 scripts/build-markup.py
 The character is drawn in CSS grid, so the page stays one static file —
 no canvas, no runtime, no JavaScript.
 
-**The beat** is a lub-dub, not a fade: full strength, a drop to half, a
-held plateau, then dark. The centre cell of the heart stays dimmer
-throughout (0.35 against 1.0), as it does in Huxley, so the shape keeps a
-focal point. The animation is disabled under `prefers-reduced-motion`.
+**The beat is a ripple, not a blink.** Every cell runs the same keyframes
+but starts at its own moment — the delay is set by the cell's distance
+from the heart's centre — so the pulse travels outward through the shape
+as a moving ring. The heart reads as alive, breathing from the middle
+out, rather than as a shape that switches on and off.
+
+The heart's centre cell stays dimmer at the crest (0.45 against 1.0), as
+it does in Huxley, so the ripple has a soft core and the shape keeps a
+focal point. Between beats the heart rests at a low glow (0.16) rather
+than going dark, which is what keeps it looking alive.
+
+| Ring | Delay from centre |
+|---|---|
+| centre | 0ms |
+| 1 | 35ms |
+| 2 | 70ms |
+| 3 | 105ms |
+| 4 | 140ms |
+
+The cycle is Huxley's own 2200ms pace, and the crest window closes at
+360ms, keeping the lub-dub shape: a full crest, a dimmer second crest,
+then rest. The animation is disabled under `prefers-reduced-motion`.
+
+**One trap worth naming:** `animation-delay` needs a unit. A bare number
+(`--d:140`) is not a valid `<time>`, so it resolves to `0s` — and the
+whole wave collapses back into a single blink, with no error anywhere.
+`scripts/build-markup.py` guards against it at build time.
 
 ### The colourway
 

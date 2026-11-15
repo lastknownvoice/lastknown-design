@@ -1,33 +1,71 @@
 #!/usr/bin/env python3
-"""Build a side-by-side of the Huxley mark in both colourways.
+"""Build a side-by-side of the mark in both colourways.
 
-Both panels are the real page markup, one forced light and one forced
-dark, so the comparison is against the thing.
+Both panels are the real page markup, and the CSS is lifted straight out
+of the generated `index.html`, so the preview cannot drift from what
+actually ships. Only the palette custom properties are overridden per
+panel -- everything else is the real thing.
 
 Run:  python3 scripts/build-huxley-preview.py
 Out:  design/huxley-preview.html
 """
 
+import importlib.util
 import pathlib
+import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
-# Pull the real cells and CSS out of the generated page so the preview
-# cannot drift from what actually ships.
-INDEX = (ROOT / "index.html").read_text(encoding="utf-8")
-
-import importlib.util
 spec = importlib.util.spec_from_file_location("bm", ROOT / "scripts" / "build-markup.py")
 bm = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bm)
 
 CELLS = bm.mark_cells()
 
+# Pull the real mark stylesheet out of the shipped page. The markers
+# bracket just the mark's rules, so the preview gets the real animation
+# without inheriting the page's body/main layout. The root block comes
+# too, because it holds --cell and --gap.
+INDEX = (ROOT / "index.html").read_text(encoding="utf-8")
 
-def panel(theme, ground, ink, pink, pale, label):
+style_match = re.search(
+    r"MARK-CSS-START.*?\*/(.*?)/\* MARK-CSS-END", INDEX, re.S
+)
+if not style_match:
+    raise SystemExit("could not find the mark CSS markers in index.html")
+
+root_match = re.search(r":root\s*\{(.*?)\}", INDEX, re.S)
+if not root_match:
+    raise SystemExit("could not find the :root block in index.html")
+
+# Interpolated values are inserted verbatim -- their braces are not
+# re-processed by the f-string, so they must NOT be doubled. Doubling
+# here emits literal `{{` into the CSS, which silently kills the rules.
+REAL_CSS = style_match.group(1)
+ROOT_CSS = root_match.group(1)
+
+
+def panel_vars(theme, palette):
+    """One panel's colourway, as CSS custom property overrides."""
+    return (
+        f"  .panel.{theme} {{\n"
+        f"    --ground: {palette['ground']};\n"
+        f"    --ink: {palette['ink']};\n"
+        f"    --pink: {palette['pink']};\n"
+        f"    --pale: {palette['pale']};\n"
+        f"    background: var(--ground);\n"
+        f"    color: var(--ink);\n"
+        f"  }}\n"
+    )
+
+
+PANEL_CSS = panel_vars("light", bm.PALETTE) + panel_vars("dark", bm.PALETTE_DARK)
+
+
+def panel(theme, palette, label):
     return f"""  <section class="panel {theme}">
     <div class="mark-wrap">
-      <div class="mark" role="img" aria-label="Huxley">
+      <div class="mark" role="img" aria-label="A beating heart">
         {CELLS}
       </div>
       <h1>lastknown<span class="tld">.design</span></h1>
@@ -35,10 +73,10 @@ def panel(theme, ground, ink, pink, pale, label):
     </div>
     <p class="label">{label}</p>
     <ul class="swatches">
-      <li><span style="background:{ground}"></span>ground {ground}</li>
-      <li><span style="background:{ink}"></span>ink {ink}</li>
-      <li><span style="background:{pink}"></span>pink {pink}</li>
-      <li><span style="background:{pale}"></span>pale {pale}</li>
+      <li><span style="background:{palette['ground']}"></span>ground {palette['ground']}</li>
+      <li><span style="background:{palette['ink']}"></span>ink {palette['ink']}</li>
+      <li><span style="background:{palette['pink']}"></span>pink {palette['pink']}</li>
+      <li><span style="background:{palette['pale']}"></span>pale {palette['pale']}</li>
     </ul>
   </section>"""
 
@@ -51,76 +89,83 @@ HTML = f"""<!DOCTYPE html>
 <title>Huxley mark — light and dark</title>
 <style>
   * {{ box-sizing: border-box; }}
+
   body {{
-    margin: 0; background: #6b6560; color: #171614;
+    margin: 0;
+    background: #6b6560;
+    color: #171614;
     font-family: ui-sans-serif, -apple-system, sans-serif;
-    padding: 2rem; display: flex; gap: 2rem; flex-wrap: wrap;
+    padding: 2rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
     align-items: flex-start;
   }}
+
+  /* ---- the real stylesheet from index.html ---- */
+  :root {{ {ROOT_CSS} }}
+{REAL_CSS}
+
+  /* ---- the preview's own chrome ---- */
+{PANEL_CSS}
   .panel {{
-    flex: 1 1 340px; padding: 2.5rem 1.5rem 1.5rem;
-    border-radius: 10px; position: relative;
-    display: flex; flex-direction: column; align-items: center;
+    flex: 1 1 340px;
+    padding: 2.5rem 1.5rem 1.5rem;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }}
-  .panel.light {{ background: {bm.PALETTE['ground']}; color: {bm.PALETTE['ink']}; }}
-  .panel.dark  {{ background: {bm.PALETTE_DARK['ground']}; color: {bm.PALETTE_DARK['ink']}; }}
 
   .mark-wrap {{
-    flex: 1; display: flex; flex-direction: column; align-items: center;
-    justify-content: center; text-align: center;
-    gap: clamp(1.5rem, 4vw, 2.5rem); padding: 1rem 0 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: clamp(1.5rem, 4vw, 2.5rem);
+    padding: 1rem 0 2rem;
   }}
 
   .mark {{
-    display: grid; grid-template-columns: repeat(5, 14px);
-    grid-auto-rows: 14px; gap: 4px; margin: 0; padding: 0; list-style: none;
-  }}
-  .mark i {{ display:block; border-radius: 1px; }}
-  .panel.light .mark i.heart {{ background: {bm.PALETTE['pink']}; animation: var(--beat, beat) 2.2s cubic-bezier(.4,0,.2,1) infinite; }}
-  .panel.dark  .mark i.heart {{ background: {bm.PALETTE_DARK['pink']}; animation: var(--beat, beat) 2.2s cubic-bezier(.4,0,.2,1) infinite; }}
-
-  @keyframes beat {{
-    0%, 6% {{opacity:1}} 9% {{opacity:.45}} 13%, 20% {{opacity:.5}} 26%, 100% {{opacity:0}}
-  }}
-  @keyframes beat-mid {{
-    0%, 6% {{opacity:.35}} 9% {{opacity:.16}} 13%, 20% {{opacity:.175}} 26%, 100% {{opacity:0}}
-  }}
-
-  h1 {{
-    margin: 0; font-size: clamp(1.8rem, 1rem + 5vw, 3.4rem); font-weight: 400;
-    line-height: 1; letter-spacing: -.022em;
-    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  }}
-  h1 .tld {{ color: {bm.PALETTE['pink']}; }}
-  .panel.dark h1 .tld {{ color: {bm.PALETTE_DARK['pink']}; }}
-
-  .standfirst {{
-    margin: 0; max-width: 22rem; font-size: 1rem; line-height: 1.55;
-    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    grid-template-columns: repeat(5, 14px);
+    grid-auto-rows: 14px;
+    gap: 4px;
   }}
 
   .label {{
-    margin: 0 0 .8rem; font-size: .75rem; letter-spacing: .16em;
-    text-transform: uppercase; opacity: .65; font-weight: 500;
+    margin: 0 0 .8rem;
+    font-size: .75rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    opacity: .65;
+    font-weight: 500;
   }}
+
   .swatches {{
-    list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap;
-    gap: .35rem 1rem; font-size: .75rem; font-family: ui-monospace, monospace;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem 1rem;
+    font-size: .75rem;
+    font-family: ui-monospace, monospace;
     opacity: .8;
   }}
   .swatches li {{ display: flex; align-items: center; gap: .4rem; }}
-  .swatches span {{ width: .8rem; height: .8rem; border-radius: 2px; border: 1px solid rgba(0,0,0,.2); }}
-
-  @media (prefers-reduced-motion: reduce) {{
-    .mark i.heart {{ animation: none !important; opacity: 1; }}
+  .swatches span {{
+    width: .8rem; height: .8rem; border-radius: 2px;
+    border: 1px solid rgba(0,0,0,.2);
   }}
 </style>
 </head>
 <body>
 
-{panel("light", bm.PALETTE["ground"], bm.PALETTE["ink"], bm.PALETTE["pink"], bm.PALETTE["pale"], "Light — Designers Republic orange")}
+{panel("light", bm.PALETTE, "Light — Designers Republic orange")}
 
-{panel("dark", bm.PALETTE_DARK["ground"], bm.PALETTE_DARK["ink"], bm.PALETTE_DARK["pink"], bm.PALETTE_DARK["pale"], "Dark — re-grounded on ink")}
+{panel("dark", bm.PALETTE_DARK, "Dark — re-grounded on ink")}
 
 </body>
 </html>
@@ -130,3 +175,5 @@ out = ROOT / "design" / "huxley-preview.html"
 out.parent.mkdir(exist_ok=True)
 out.write_text(HTML, encoding="utf-8")
 print(f"wrote {out}")
+print("  css      : lifted from index.html")
+print(f"  wave     : {len(bm.RINGS)} rings, {bm.WAVE_STEP_MS}ms per ring")

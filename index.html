@@ -27,6 +27,8 @@
     --sans:  ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
   }
 
+  /* MARK-ROOT-END */
+
   @media (prefers-color-scheme: dark) {
     :root {
       --ground: #1B262E;
@@ -65,6 +67,8 @@
 
   /* ---------- the mark ---------- */
 
+  /* MARK-CSS-START — the preview lifts this block so it cannot drift */
+
   /*
     Huxley puts the heart at the chest of a 24x24 grid, below the eyes
     and the mouth. The mark is the heart alone -- the face comes off,
@@ -87,40 +91,52 @@
     display: block;
     background: var(--ink);
     border-radius: 1px;
-    opacity: var(--o);
-  }
-
-  /* The heart is the life signal, and it carries the pink. */
-  .mark i.heart {
-    background: var(--pink);
-    animation: var(--beat, beat) 2.2s cubic-bezier(.4, 0, .2, 1) infinite;
+    opacity: var(--base);
   }
 
   /*
-    A lub-dub, not a fade.
+    The heart is the life signal, and it carries the pink.
+
+    The beat is a ripple, not a blink. Every cell runs the same
+    keyframes but starts at its own moment -- the delay is set by the
+    cell's distance from the heart's centre -- so the pulse travels
+    outward through the shape. The heart reads as alive, breathing
+    from the middle out, rather than as a shape switching on and off.
+  */
+  .mark i.heart {
+    background: var(--pink);
+    animation: wave 2.2s cubic-bezier(.4, 0, .2, 1) infinite;
+    animation-delay: var(--d);
+  }
+
+  /*
+    A lub-dub, travelling.
 
     Huxley beats at full strength, drops to half 180ms later, and goes
     dark 360ms after that. Holding each value briefly makes the two
     beats read as two beats rather than one long dimming -- the drop
     between them is the thing your eye catches.
 
+    Huxley's pace is 2200ms, and the crest window closes at 360ms. The
+    keyframes below keep that shape: a full crest, a dimmer second
+    crest, then rest at the base level.
+
     The centre cell of the heart stays dimmer throughout, as it does in
-    Huxley, so the shape has a focal point instead of reading as a
-    solid blob.
+    Huxley, so the ripple has a soft core and the shape keeps a focal
+    point instead of reading as a solid blob.
+
+    The base level is not zero. The heart never fully vanishes -- it
+    rests at a low glow and rises out of it. That is what keeps it
+    looking alive between beats.
   */
-  @keyframes beat {
-    0%, 6%   { opacity: 1; }
-    9%       { opacity: .45; }
-    13%, 20% { opacity: .5; }
-    26%, 100% { opacity: 0; }
+  @keyframes wave {
+    0%        { opacity: var(--peak); }
+    4%        { opacity: var(--half); }
+    9%, 13%   { opacity: var(--half); }
+    17%, 100% { opacity: var(--base); }
   }
 
-  @keyframes beat-mid {
-    0%, 6%   { opacity: .35; }
-    9%       { opacity: .16; }
-    13%, 20% { opacity: .175; }
-    26%, 100% { opacity: 0; }
-  }
+  /* MARK-CSS-END */
 
   /* ---------- the name ---------- */
 
@@ -172,7 +188,7 @@
   footer .dot { opacity: .45; }
 
   @media (prefers-reduced-motion: reduce) {
-    .mark i.heart { animation: none; opacity: 1; }
+    .mark i.heart { animation: none; opacity: var(--peak); }
     * { transition: none !important; }
   }
 </style>
@@ -182,22 +198,22 @@
 <main>
 
   <div class="mark" role="img" aria-label="A beating heart">
-    <i class="c heart" style="grid-area:1/2;--o:1.0"></i>
-        <i class="c heart" style="grid-area:1/4;--o:1.0"></i>
-        <i class="c heart" style="grid-area:2/1;--o:1.0"></i>
-        <i class="c heart" style="grid-area:2/2;--o:1.0"></i>
-        <i class="c heart" style="grid-area:2/3;--o:1.0"></i>
-        <i class="c heart" style="grid-area:2/4;--o:1.0"></i>
-        <i class="c heart" style="grid-area:2/5;--o:1.0"></i>
-        <i class="c heart" style="grid-area:3/1;--o:1.0"></i>
-        <i class="c heart" style="grid-area:3/2;--o:1.0"></i>
-        <i class="c heart" style="grid-area:3/3;--o:1.0;--beat: beat-mid"></i>
-        <i class="c heart" style="grid-area:3/4;--o:1.0"></i>
-        <i class="c heart" style="grid-area:3/5;--o:1.0"></i>
-        <i class="c heart" style="grid-area:4/2;--o:1.0"></i>
-        <i class="c heart" style="grid-area:4/3;--o:1.0"></i>
-        <i class="c heart" style="grid-area:4/4;--o:1.0"></i>
-        <i class="c heart" style="grid-area:5/3;--o:1.0"></i>
+    <i class="c heart" style="grid-area:1/2;--d:140ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:1/4;--d:140ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:2/1;--d:140ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:2/2;--d:70ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:2/3;--d:35ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:2/4;--d:70ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:2/5;--d:140ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:3/1;--d:105ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:3/2;--d:35ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:3/3;--d:0ms;--peak:0.45;--half:0.225;--base:0.16"></i>
+        <i class="c heart" style="grid-area:3/4;--d:35ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:3/5;--d:105ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:4/2;--d:70ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:4/3;--d:35ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:4/4;--d:70ms;--peak:1.0;--half:0.5;--base:0.16"></i>
+        <i class="c heart" style="grid-area:5/3;--d:105ms;--peak:1.0;--half:0.5;--base:0.16"></i>
   </div>
 
   <h1>lastknown<span class="tld">.design</span></h1>
