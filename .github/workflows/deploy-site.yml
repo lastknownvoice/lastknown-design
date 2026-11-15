@@ -29,9 +29,14 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html _site/index.html
+          # The wordmark's typeface is self-hosted, so the font files
+          # have to ship with the page or the site falls back to the
+          # system monospace.
+          cp -r fonts _site/fonts
           # .nojekyll stops Pages running the output through Jekyll.
           touch _site/.nojekyll
           ls -la _site/
+          ls -la _site/fonts/
 
       - uses: actions/configure-pages@v5
         id: pages

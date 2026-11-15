@@ -96,6 +96,69 @@ BASE_OPACITY = 0.16
 CENTER_PEAK = 0.45
 
 
+# --------------------------------------------------------------------------
+# The wordmark's typeface
+# --------------------------------------------------------------------------
+
+# IBM Plex Mono, self-hosted. The weights and subsets that ship with the
+# site are named here, so adding or dropping one is a one-line change.
+#
+# Self-hosted rather than pulled from Google's CDN on purpose: the site
+# is a single static file, and a third-party font request would hand a
+# visitor's IP to a server the site otherwise has nothing to do with.
+#
+# The fonts are IBM Plex Mono, licensed under the SIL Open Font License
+# 1.1. The licence requires the copyright notice and licence to be
+# bundled with the font -- see fonts/LICENSE.txt.
+PLEX_WEIGHTS = [400, 500]
+PLEX_SUBSETS = ["latin", "latin-ext"]
+
+PLEX_UNICODE = {
+    "latin": (
+        "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, "
+        "U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, "
+        "U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD"
+    ),
+    "latin-ext": (
+        "U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, "
+        "U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, "
+        "U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF"
+    ),
+}
+
+
+def plex_filename(weight, subset):
+    return f"IBMPlexMono-{weight}-{subset}.woff2"
+
+
+def font_face_css():
+    """The @font-face rules for the self-hosted Plex Mono files.
+
+    The unicode-range is what keeps the browser downloading one small
+    file per subset instead of the full family.
+    """
+    faces = []
+    for weight in PLEX_WEIGHTS:
+        for subset in PLEX_SUBSETS:
+            name = plex_filename(weight, subset)
+            path = ROOT / "fonts" / name
+            if not path.exists():
+                raise SystemExit(
+                    f"missing font file: fonts/{name} -- run scripts/fetch-fonts.py"
+                )
+            faces.append(
+                f'  @font-face {{\n'
+                f'    font-family: "IBM Plex Mono";\n'
+                f'    font-style: normal;\n'
+                f'    font-weight: {weight};\n'
+                f'    font-display: swap;\n'
+                f'    src: url("fonts/{name}") format("woff2");\n'
+                f'    unicode-range: {PLEX_UNICODE[subset]};\n'
+                f'  }}'
+            )
+    return "\n\n".join(faces)
+
+
 def wave_rings():
     """The heart's distinct radii from the centre, ranked outward."""
     radii = sorted({round(math.hypot(lx, ly), 4) for lx, ly in HEART})
@@ -194,6 +257,8 @@ HTML = """<!DOCTYPE html>
 <link rel="icon" href="__FAVICON__">
 
 <style>
+__FONT_FACES__
+
   :root {
     --ground:  __GROUND__;
     --ink:     __INK__;
@@ -205,6 +270,7 @@ HTML = """<!DOCTYPE html>
 
     --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
     --sans:  ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+    --mono:  "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
 
   /* MARK-ROOT-END */
@@ -318,17 +384,34 @@ HTML = """<!DOCTYPE html>
 
   /* MARK-CSS-END */
 
+  /* NAME-CSS-START — the preview lifts this block so it cannot drift */
+
   /* ---------- the name ---------- */
 
+  /*
+    The wordmark is set in IBM Plex Mono.
+
+    A monospace face is a wider object than the serif it replaced --
+    every glyph advances the same 0.6em, so "lastknown.design" runs
+    noticeably wider than it did in Iowan Old Style. The size is
+    therefore derived from the space available rather than picked by
+    eye: sixteen characters at 0.6em each need 9.6em of width, so the
+    size is capped at (viewport - padding) / 9.6 and only then clamped
+    to the design's ceiling. That keeps the wordmark intact at every
+    width instead of letting it overflow a phone.
+  */
   h1 {
     margin: 0;
-    font-size: clamp(2.1rem, 1rem + 7vw, 4.6rem);
+    font-family: var(--mono);
+    font-size: clamp(1.5rem, (100vw - 3rem) / 9.6, 4.6rem);
     font-weight: 400;
     line-height: 1;
-    letter-spacing: -0.022em;
+    letter-spacing: -0.03em;
     text-wrap: balance;
   }
   h1 .tld { color: var(--pink); }
+
+  /* NAME-CSS-END */
 
   /* ---------- the standfirst ---------- */
 
@@ -417,6 +500,7 @@ def build():
         HTML.replace("__CELLS__", mark_cells())
         .replace("__CYCLE__", CYCLE)
         .replace("__FAVICON__", favicon_uri())
+        .replace("__FONT_FACES__", font_face_css())
         .replace("__GROUND__", PALETTE["ground"])
         .replace("__INK__", PALETTE["ink"])
         .replace("__PINK__", PALETTE["pink"])

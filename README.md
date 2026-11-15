@@ -10,9 +10,11 @@ splash: the mark, the name, one door to the book, and a way to get in touch.
 | `index.html` | The whole site — markup, CSS and copy in one file |
 | `scripts/build-markup.py` | Generates `index.html` from the Huxley source |
 | `scripts/build-huxley-preview.py` | Builds the light/dark comparison sheet |
+| `scripts/fetch-fonts.py` | Refetches the self-hosted font files (only needed when the family changes) |
+| `fonts/` | IBM Plex Mono woff2 subsets + the OFL licence |
 | `design/` | Comparison sheets used to choose the mark |
 | `CNAME` | The custom domain (`lastknown.design`) |
-| `.github/workflows/deploy-site.yml` | Copies `index.html` to `_site/` and deploys via the official Pages actions |
+| `.github/workflows/deploy-site.yml` | Copies `index.html` and `fonts/` to `_site/` and deploys via the official Pages actions |
 
 ## The mark
 
@@ -89,6 +91,33 @@ the sentence would survive being written about any other product, cut it.
 Colours and type are CSS custom properties at the top of the file. Light and
 dark are both defined; dark follows `prefers-color-scheme`, and the
 animation is disabled under `prefers-reduced-motion`.
+
+## The type
+
+The wordmark is set in **IBM Plex Mono**. The standfirst stays in the serif
+and the footer in the sans — only the name is monospace.
+
+Monospace is a **wider object** than the serif it replaced: every glyph
+advances the same 0.6em, so `lastknown.design` runs 23% wider than it did in
+Iowan Old Style. The size is therefore derived from the space available
+rather than picked by eye — sixteen characters at 0.6em need 9.6em of
+width, so the size is capped at `(viewport - 3rem) / 9.6` and only then
+clamped to the 4.6rem ceiling. That keeps the wordmark whole at every
+width instead of letting it overflow a phone.
+
+The font is **self-hosted** in `fonts/`, not pulled from Google's CDN: the
+site is otherwise a single static file, and a third-party font request
+would hand a visitor's IP to a server the site has no other business
+talking to. Four woff2 subsets (400 and 500, latin and latin-ext) come to
+37KB; `unicode-range` keeps the browser to one small file per subset.
+
+The files are IBM Plex Mono under the **SIL Open Font License 1.1**, which
+requires the licence to ship with the font — `fonts/LICENSE.txt` does that.
+
+Adding or dropping a weight is a one-line change to `PLEX_WEIGHTS` in
+`scripts/build-markup.py`. If you change the family itself, run
+`python3 scripts/fetch-fonts.py` to pull the new files, then update the
+`@font-face` rules and the `--mono` token to match.
 
 ## Licence
 

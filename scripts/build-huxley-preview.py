@@ -34,14 +34,27 @@ style_match = re.search(
 if not style_match:
     raise SystemExit("could not find the mark CSS markers in index.html")
 
+# The wordmark's own rules are lifted too, so the preview sets the name
+# in the same typeface and at the same size as the live page.
+name_match = re.search(
+    r"NAME-CSS-START.*?\*/(.*?)/\* NAME-CSS-END", INDEX, re.S
+)
+if not name_match:
+    raise SystemExit("could not find the name CSS markers in index.html")
+
 root_match = re.search(r":root\s*\{(.*?)\}", INDEX, re.S)
 if not root_match:
     raise SystemExit("could not find the :root block in index.html")
 
+# The @font-face rules come along too, so the preview sets the name in
+# the real typeface. The font paths are rewritten because the preview
+# lives in design/, one level down from the site's root.
+FONT_FACES = bm.font_face_css().replace('url("fonts/', 'url("../fonts/')
+
 # Interpolated values are inserted verbatim -- their braces are not
 # re-processed by the f-string, so they must NOT be doubled. Doubling
 # here emits literal `{{` into the CSS, which silently kills the rules.
-REAL_CSS = style_match.group(1)
+REAL_CSS = style_match.group(1) + name_match.group(1)
 ROOT_CSS = root_match.group(1)
 
 
@@ -103,6 +116,7 @@ HTML = f"""<!DOCTYPE html>
   }}
 
   /* ---- the real stylesheet from index.html ---- */
+{FONT_FACES}
   :root {{ {ROOT_CSS} }}
 {REAL_CSS}
 
@@ -132,6 +146,15 @@ HTML = f"""<!DOCTYPE html>
     grid-template-columns: repeat(5, 14px);
     grid-auto-rows: 14px;
     gap: 4px;
+  }}
+
+  /*
+    The wordmark's real size is derived from the viewport, which in a
+    preview panel would be the whole window rather than the panel. Size
+    it against the panel instead.
+  */
+  .panel h1 {{
+    font-size: clamp(1.25rem, 3.2vw, 2.4rem);
   }}
 
   .label {{
